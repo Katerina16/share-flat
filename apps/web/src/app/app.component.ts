@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'diplom-root',
@@ -6,5 +7,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'web';
+  constructor(private readonly http: HttpClient) {
+    this.http.get('/api/test').subscribe();
+  }
 }
