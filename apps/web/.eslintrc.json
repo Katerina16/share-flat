@@ -9,7 +9,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "diplom",
+            "prefix": "sf",
             "style": "camelCase"
           }
         ],
@@ -17,10 +17,51 @@
           "error",
           {
             "type": "element",
-            "prefix": "diplom",
+            "prefix": "sf",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "indent": ["error", 2],
+        "linebreak-style": ["error", "unix"],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "@typescript-eslint/explicit-module-boundary-types": "error",
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-unused-vars": "error",
+        "array-bracket-spacing": ["error", "never"],
+        "arrow-parens": ["error", "as-needed", { "requireForBlockBody": true }],
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        "comma-dangle": ["error", "never"],
+        "comma-spacing": "error",
+        "dot-notation": "error",
+        "keyword-spacing": ["error", { "before": true }],
+        "lines-between-class-members": [
+          "error",
+          "always",
+          { "exceptAfterSingleLine": true }
+        ],
+        "max-len": [
+          "error",
+          {
+            "code": 120,
+            "ignorePattern": "^import .*|\\s*(ru|en|'ru'|'en'): .*"
+          }
+        ],
+        "no-empty": "error",
+        "no-empty-function": ["error", { "allow": ["constructors"] }],
+        "no-magic-numbers": [
+          "error",
+          { "ignoreArrayIndexes": true, "ignore": [-1, 0, 1] }
+        ],
+        "no-multiple-empty-lines": "error",
+        "no-param-reassign": ["error", { "props": false }],
+        "no-unreachable": "error",
+        "no-unused-expressions": "error",
+        "no-var": "error",
+        "object-curly-spacing": ["error", "always"],
+        "prefer-const": "error",
+        "space-in-parens": ["error", "never"],
+        "use-isnan": "error"
       },
       "extends": [
         "plugin:@nrwl/nx/angular",
