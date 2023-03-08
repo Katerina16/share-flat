@@ -4,18 +4,28 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import {UserEntity} from "@sf/interfaces/modules/user/entities/user.entity";
 import {AuthModule} from "./auth/auth.module";
 import { TokenModule } from './token/token.module';
+import {ConfigModule, ConfigService} from "@nestjs/config";
+import config from '../config'
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: '',
-      password: '',
-      database: 'share_flat',
-      entities: [UserEntity],
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [config]
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('database.host'),
+        port: +configService.get('database.port'),
+        username: configService.get('database.user'),
+        password: configService.get('database.password'),
+        database: configService.get('database.name'),
+        entities: [UserEntity],
+        synchronize: true,
+      }),
+      inject: [ConfigService],
     }),
     UserModule,
     AuthModule,
