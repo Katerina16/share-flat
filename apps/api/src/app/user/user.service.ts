@@ -7,6 +7,10 @@ import {UserCryptoService} from "./user.crypto.service";
 @Injectable()
 export class UserService {
 
+  async getUserById(id: number): Promise<UserEntity> {
+    return UserEntity.findOne({ where: { id } });
+  }
+
   async findUserByEmail(email: string): Promise<UserEntity> {
     return UserEntity.findOne({ where: { email } });
   }
