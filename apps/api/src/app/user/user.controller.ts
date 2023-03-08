@@ -1,7 +1,8 @@
-import {Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Post, Put, Req, UseGuards} from '@nestjs/common';
 import {UserService} from "./user.service";
 import {CreateUserDto} from "@sf/interfaces/modules/user/dto/create.user.dto";
 import {JwtGuard} from "../../guards/jwt.guard";
+import {UpdateUserDto} from "@sf/interfaces/modules/user/dto/update.user.dto";
 
 
 @Controller('user')
@@ -14,8 +15,18 @@ export class UserController {
   }
 
   @UseGuards(JwtGuard)
-  @Get(':id')
-  async getUserById(@Param('id', ParseIntPipe) id) {
-    return this.userService.getUserById(id);
+  @Get('current')
+  getUserById(@Req() req) {
+    const { user } = req;
+
+    return this.userService.getUserById(user.id);
+  }
+
+  @UseGuards(JwtGuard)
+  @Put()
+  updateUser(@Body() body: UpdateUserDto, @Req() req) {
+    const { user } = req;
+
+    return this.userService.update(user.id, body);
   }
 }

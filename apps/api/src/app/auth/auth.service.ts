@@ -18,7 +18,7 @@ export class AuthService {
     const existsUser = await this.userService.findUserByEmail(dto.email);
 
     if (existsUser) {
-      throw new BadRequestException('Пользователь уже существует')
+      throw new BadRequestException('Пользователь уже существует');
     }
 
     return this.userService.create(dto);
@@ -28,7 +28,7 @@ export class AuthService {
     const existsUser = await this.userService.findUserByEmail(login.email);
 
     if (!existsUser) {
-      throw new BadRequestException('Пользователь не существует')
+      throw new BadRequestException('Пользователь не существует');
     }
 
     const hash = UserCryptoService.encrypt(login.password);
