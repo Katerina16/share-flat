@@ -1,0 +1,27 @@
+<div class="background h-screen -mx-6 -mt-6">
+  <div class="w-full h-full backdrop-blur-sm">
+    <form [formGroup]="form" class="w-full max-w-4xl p-3 pt-48 mx-auto">
+      <div class="flex items-center">
+        <div class="flex flex-1 items-center">
+          <tui-select formControlName="city" class="w-full">
+            Город
+            <input tuiTextfield placeholder="Выберите город" />
+            <tui-data-list-wrapper *tuiDataList [items]="items"></tui-data-list-wrapper>
+          </tui-select>
+
+          <tui-input-date-range formControlName="period" class="ml-2 w-full">
+            Выберите даты
+            <input tuiTextfield placeholder="Заезд - Отъезд" />
+          </tui-input-date-range>
+
+          <tui-input-count formControlName="guests" [min]="1" class="ml-2">
+            Гости
+            <input tuiTextfield placeholder="Кол-во гостей" />
+          </tui-input-count>
+        </div>
+
+        <button tuiButton type="button" class="ml-2">Найти</button>
+      </div>
+    </form>
+  </div>
+</div>

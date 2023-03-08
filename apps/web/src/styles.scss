@@ -1,1 +1,12 @@
-/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// :root {
+//   --tui-primary: #f87171;
+//   --tui-primary-hover: #e95353;
+// }
+
+.text-primary {
+  color: var(--tui-primary);
+}
