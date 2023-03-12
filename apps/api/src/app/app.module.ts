@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import {UserModule} from "./user/user.module";
-import {TypeOrmModule} from "@nestjs/typeorm";
-import {UserEntity} from "@sf/interfaces/modules/user/entities/user.entity";
-import {AuthModule} from "./auth/auth.module";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { UserEntity } from "@sf/interfaces/modules/user/entities/user.entity";
+import config from '../config';
+import { AuthModule } from "./auth/auth.module";
 import { TokenModule } from './token/token.module';
-import {ConfigModule, ConfigService} from "@nestjs/config";
-import config from '../config'
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -34,4 +34,4 @@ import config from '../config'
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

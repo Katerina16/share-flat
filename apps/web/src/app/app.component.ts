@@ -1,7 +1,6 @@
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { TuiRootModule } from '@taiga-ui/core';
+import { TuiAlertModule, TuiDialogModule, TuiRootModule } from '@taiga-ui/core';
 
 @Component({
   selector: 'sf-root',
@@ -9,7 +8,8 @@ import { TuiRootModule } from '@taiga-ui/core';
   imports: [
     RouterModule,
     TuiRootModule,
-    HttpClientModule
+    TuiAlertModule,
+    TuiDialogModule
   ],
   template: `
     <tui-root>
@@ -18,7 +18,5 @@ import { TuiRootModule } from '@taiga-ui/core';
   `
 })
 export class AppComponent {
-  constructor(private readonly http: HttpClient) {
-    this.http.get('/api/test').subscribe();
-  }
+
 }

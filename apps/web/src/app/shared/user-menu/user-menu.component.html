@@ -1,0 +1,26 @@
+<div class="ml-8">
+  <div *ngIf="user$ | async as user; else loginButton" class="flex items-center">
+    <tui-avatar [text]="user.firstName" size="s"></tui-avatar>
+    <div class="text-white text-xs ml-2">
+      <p>{{ user.firstName }}</p>
+      <p>{{ user.lastName }}</p>
+    </div>
+    <button
+      tuiIconButton
+      size="s"
+      appearance="flat"
+      type="button"
+      icon="tuiIconLogOut"
+      class="ml-3"
+      (click)="logout()"
+    ></button>
+  </div>
+
+  <ng-template #loginButton>
+    <sf-login-button #logBtn>
+      <button tuiButton size="s" appearance="outline" type="button" icon="tuiIconLogIn" (click)="logBtn.showDialog()">
+        Войти
+      </button>
+    </sf-login-button>
+  </ng-template>
+</div>

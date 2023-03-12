@@ -15,9 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@sf/interfaces/*": [
-        "libs/interfaces/*"
-      ]
+      "@sf/interfaces/*": ["libs/interfaces/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,0 +1,8 @@
+<div [tuiMode]="null">
+  <sf-login *ngIf="type === 'login'"></sf-login>
+  <sf-register *ngIf="type === 'register'"></sf-register>
+
+  <div *ngIf="type === 'login'" class="mt-4 text-center">
+    Нет аккаунта? <a tuiLink (click)="type = 'register'"> Регистрация </a>
+  </div>
+</div>

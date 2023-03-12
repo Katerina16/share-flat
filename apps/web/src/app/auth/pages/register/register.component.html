@@ -1,0 +1,45 @@
+<h2 class="tui-text_h2 text-center mb-6">Регистрация</h2>
+<form [formGroup]="form">
+  <tui-input formControlName="firstName" class="mt-4">
+    Имя
+    <input tuiTextfield type="text" />
+  </tui-input>
+  <tui-error formControlName="firstName" [error]="[] | tuiFieldError | async"></tui-error>
+
+  <tui-input formControlName="lastName" class="mt-4">
+    Фамилия
+    <input tuiTextfield type="text" />
+  </tui-input>
+  <tui-error formControlName="lastName" [error]="[] | tuiFieldError | async"></tui-error>
+
+  <tui-input formControlName="middleName" class="mt-4">
+    Отчество
+    <input tuiTextfield type="text" />
+  </tui-input>
+  <tui-error formControlName="middleName" [error]="[] | tuiFieldError | async"></tui-error>
+
+  <tui-input-date formControlName="birthDate" toNativeDate class="mt-4"> Дата рождения </tui-input-date>
+  <tui-error formControlName="birthDate" [error]="[] | tuiFieldError | async"></tui-error>
+
+  <tui-input-phone formControlName="phone" class="mt-4">
+    Номер телефона
+    <input tuiTextfield autocomplete="tel" />
+  </tui-input-phone>
+  <tui-error formControlName="phone" [error]="[] | tuiFieldError | async"></tui-error>
+
+  <tui-input formControlName="email" class="mt-4">
+    Email
+    <input tuiTextfield type="email" />
+  </tui-input>
+  <tui-error formControlName="email" [error]="[] | tuiFieldError | async"></tui-error>
+
+  <tui-input formControlName="password" class="mt-4">
+    Пароль
+    <input tuiTextfield type="password" />
+  </tui-input>
+  <tui-error formControlName="password" [error]="[] | tuiFieldError | async"></tui-error>
+
+  <button tuiButton type="button" class="mt-6 w-full" [showLoader]="(loading$ | async) === true" (click)="register()">
+    Зарегистрироваться
+  </button>
+</form>
