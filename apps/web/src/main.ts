@@ -10,6 +10,7 @@ import { TuiRootModule } from '@taiga-ui/core';
 import { AppComponent } from './app/app.component';
 import { APP_ROUTES } from './app/app.routes';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
+import { errorInterceptor } from './app/core/interceptors/error.interceptor';
 import { appEffects } from './app/core/store/effects';
 import { appReducers } from './app/core/store/reducers';
 
@@ -17,7 +18,7 @@ import { appReducers } from './app/core/store/reducers';
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(APP_ROUTES),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     importProvidersFrom([
       BrowserAnimationsModule,
       TuiRootModule,

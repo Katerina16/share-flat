@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { TuiAlertService, TuiNotification } from '@taiga-ui/core';
-import { exhaustMap, filter, map, tap } from 'rxjs';
+import { catchError, exhaustMap, filter, map, of, tap } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { AppState } from '../reducers';
 import * as AuthActions from './actions';
@@ -18,7 +18,8 @@ export class AuthEffects {
         tap(() => {
           this.alertService.open('Вы успешно зарегистрированы!', { status: TuiNotification.Success }).subscribe();
         }),
-        map(() => AuthActions.registerSuccess())
+        map(() => AuthActions.registerSuccess()),
+        catchError(() => of(AuthActions.registerFail()))
       )
     )
   ));
@@ -31,7 +32,8 @@ export class AuthEffects {
     ofType(AuthActions.login),
     exhaustMap(action => this.authService.login(action.data)
       .pipe(
-        map(data => AuthActions.loginSuccess(data))
+        map(data => AuthActions.loginSuccess(data)),
+        catchError(() => of(AuthActions.loginFail()))
       )
     )
   ));
@@ -57,7 +59,8 @@ export class AuthEffects {
     ofType(AuthActions.getCurrentUser),
     exhaustMap(() => this.authService.getCurrentUser()
       .pipe(
-        map(user => AuthActions.getCurrentUserSuccess({ user }))
+        map(user => AuthActions.getCurrentUserSuccess({ user })),
+        catchError(() => of(AuthActions.getCurrentUserFail()))
       )
     )
   ));
