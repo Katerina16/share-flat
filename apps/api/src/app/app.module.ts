@@ -15,6 +15,8 @@ import {ChatEntity} from "@sf/interfaces/modules/flat/entities/chat.entity";
 import {MessageEntity} from "@sf/interfaces/modules/flat/entities/message.entity";
 import {ReservationEntity} from "@sf/interfaces/modules/flat/entities/reservation.entity";
 import {ReviewEntity} from "@sf/interfaces/modules/flat/entities/review.entity";
+import {FlatModule} from "./flat/flat.module";
+import {CityModule} from "./city/city.module";
 
 @Module({
   imports: [
@@ -49,7 +51,9 @@ import {ReviewEntity} from "@sf/interfaces/modules/flat/entities/review.entity";
     }),
     UserModule,
     AuthModule,
-    TokenModule
+    TokenModule,
+    FlatModule,
+    CityModule
   ],
   controllers: [],
   providers: [],
