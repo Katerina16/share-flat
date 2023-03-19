@@ -1,17 +1,26 @@
-import {Entity, Column, PrimaryGeneratedColumn, Index, BaseEntity} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, Index, BaseEntity, OneToMany} from 'typeorm';
+import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
+import {ReviewEntity} from "@sf/interfaces/modules/flat/entities/review.entity";
+import {MessageEntity} from "@sf/interfaces/modules/flat/entities/message.entity";
 
 @Entity('user')
 export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('character varying', {
+    name: 'first_name'
+  })
   firstName: string;
 
-  @Column()
+  @Column('character varying', {
+    name: 'last_name'
+  })
   lastName: string;
 
-  @Column()
+  @Column('character varying', {
+    name: 'middle_name'
+  })
   middleName: string;
 
   @Index('userEmailIndex', { unique: true })
@@ -35,10 +44,18 @@ export class UserEntity extends BaseEntity {
   })
   created: Date;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', name: 'birth_date' })
   birthDate: Date;
 
-  @Column({ default: false })
+  @Column({ default: false, name: 'is_admin' })
   isAdmin?: boolean;
 
+  @OneToMany(() => FlatEntity, (flats) => flats.user)
+  flats: FlatEntity[];
+
+  @OneToMany(() => ReviewEntity, (review) => review.user)
+  reviews: ReviewEntity[];
+
+  @OneToMany(() => MessageEntity, (message) => message.user)
+  messages: MessageEntity[];
 }
