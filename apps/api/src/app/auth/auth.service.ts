@@ -39,7 +39,7 @@ export class AuthService {
 
     delete existsUser.password;
 
-    const token = await this.tokenService.generateJwtToken({ id: existsUser.id, email: existsUser.email } as UserEntity);
+    const token = await this.tokenService.generateJwtToken({ id: existsUser.id, email: existsUser.email, isAdmin: existsUser.isAdmin} as UserEntity);
 
     return { user: existsUser, token };
   }
