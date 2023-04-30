@@ -37,11 +37,7 @@ export class FlatController {
   @UseGuards(JwtGuard)
   @Post(':id/photo')
   @UseInterceptors(FileInterceptor('file'))
-  pinPhoto(@Req() req, @Param('id', ParseIntPipe) flatId: number, @UploadedFile() file: Express.Multer.File) {
-    console.log(file)
-    const { user: { id } } = req;
-    console.log(id, flatId)
-    // return this.flatService.create(id, flat);
-
+  pinPhoto(@Param('id', ParseIntPipe) flatId: number, @UploadedFile() file): Promise<void> {
+    return this.flatService.pinPhoto(flatId, file);
   }
 }

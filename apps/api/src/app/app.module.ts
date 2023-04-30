@@ -17,9 +17,15 @@ import {ReservationEntity} from "@sf/interfaces/modules/flat/entities/reservatio
 import {ReviewEntity} from "@sf/interfaces/modules/flat/entities/review.entity";
 import {FlatModule} from "./flat/flat.module";
 import {CityModule} from "./city/city.module";
+import {ServeStaticModule} from "@nestjs/serve-static";
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', '..', 'photos'),
+      serveRoot: '/api/photos'
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config]
