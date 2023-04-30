@@ -57,7 +57,7 @@ export class FlatEntity extends BaseEntity {
   @Column('int')
   guests: number;
 
-  @Column('character varying', { array: true })
+  @Column('character varying', { array: true, nullable: true, default: [] })
   photos: string[];
 
   @ManyToOne(() => UserEntity, (user) => user.flats)
