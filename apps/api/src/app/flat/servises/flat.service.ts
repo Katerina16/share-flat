@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {ForbiddenException, Injectable} from '@nestjs/common';
 import {CreateFlatDto} from "@sf/interfaces/modules/flat/dto/create.flat.dto";
 import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
 import {UserEntity} from "@sf/interfaces/modules/user/entities/user.entity";
@@ -27,6 +27,32 @@ export class FlatService {
 
     return flat;
 
+  }
+
+  async update(userId: number, flatId: number, flatData: CreateFlatDto): Promise<FlatEntity> {
+
+    const flat = await this.findById(flatId);
+
+    if (userId !== flat.user.id) {
+      throw new ForbiddenException();
+    }
+
+    const { propertyValues } = flatData;
+    delete flatData.propertyValues;
+
+    await FlatEntity.update<FlatEntity>({ id: flatId }, flatData);
+
+    for (const propertyValue of flat.propertyValues) {
+      await PropertyValueEntity.delete(propertyValue.id);
+    }
+
+    for (const propertyValue of propertyValues) {
+      propertyValue.flat = { id: flat.id } as FlatEntity;
+    }
+
+    await PropertyValueEntity.insert(propertyValues);
+
+    return flat;
   }
 
   async pinPhoto(flatId: number, file) {

@@ -4,7 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Post,
+  Post, Put,
   Req,
   UploadedFile,
   UseGuards,
@@ -33,6 +33,14 @@ export class FlatController {
     const { user: { id } } = req;
     return this.flatService.create(id, flat);
   }
+
+  @UseGuards(JwtGuard)
+  @Put(':id')
+  update(@Req() req, @Param('id', ParseIntPipe) flatId: number, @Body() flat: CreateFlatDto): Promise<FlatEntity> {
+    const { user: { id } } = req;
+    return this.flatService.update(id, flatId, flat);
+  }
+
 
   @UseGuards(JwtGuard)
   @Post(':id/photo')
