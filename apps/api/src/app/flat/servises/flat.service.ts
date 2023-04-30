@@ -8,8 +8,8 @@ import {PropertyValueEntity} from "@sf/interfaces/modules/flat/entities/property
 @Injectable()
 export class FlatService {
 
-  async findById(id): Promise<FlatEntity[]> {
-    return FlatEntity.find({ where: { id }, relations: ['propertyValues', 'propertyValues.property', 'user'] });
+  async findById(id): Promise<FlatEntity> {
+    return FlatEntity.findOne({ where: { id }, relations: ['propertyValues', 'propertyValues.property', 'user'] });
   }
 
   async create(userId: number, flatData: CreateFlatDto): Promise<FlatEntity> {
