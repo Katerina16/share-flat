@@ -63,9 +63,6 @@ export class CreateFlatDto implements Partial<FlatEntity> {
   })
   guests: number;
 
-  @IsNotEmpty({
-    message: 'Не заполнено поле $property'
-  })
   photos: string[];
 
   @IsNotEmpty({
