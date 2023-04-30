@@ -2,16 +2,29 @@ import {Injectable} from '@nestjs/common';
 import {CreateFlatDto} from "@sf/interfaces/modules/flat/dto/create.flat.dto";
 import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
 import {UserEntity} from "@sf/interfaces/modules/user/entities/user.entity";
+import {PropertyValueEntity} from "@sf/interfaces/modules/flat/entities/property.value.entity";
 
 
 @Injectable()
 export class FlatService {
 
-  async create(userId: number, flat: CreateFlatDto): Promise<FlatEntity> {
+  async findById(id): Promise<FlatEntity[]> {
+    return FlatEntity.find({ where: { id }, relations: ['propertyValues', 'propertyValues.property', 'user'] });
+  }
 
-    flat.user = await UserEntity.findOne({ where: { id: userId } });
+  async create(userId: number, flatData: CreateFlatDto): Promise<FlatEntity> {
 
-    return FlatEntity.create<FlatEntity>(flat).save();
+    flatData.user = await UserEntity.findOne({ where: { id: userId } });
+
+    const flat = await FlatEntity.create<FlatEntity>(flatData as FlatEntity).save();
+
+    for (const propertyValue of flat.propertyValues) {
+      propertyValue.flat = { id: flat.id } as FlatEntity;
+    }
+
+    await PropertyValueEntity.insert(flat.propertyValues);
+
+    return flat;
 
   }
 }

@@ -67,7 +67,7 @@ export class FlatEntity extends BaseEntity {
   })
   user: UserEntity;
 
-  @OneToMany(() => PropertyValueEntity, (propertyValue) => propertyValue.property)
+  @OneToMany(() => PropertyValueEntity, (propertyValue) => propertyValue.flat)
   propertyValues: PropertyValueEntity[];
 
   @OneToMany(() => ReviewEntity, (review) => review.flat)
