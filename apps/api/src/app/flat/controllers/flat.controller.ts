@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -53,5 +53,12 @@ export class FlatController {
   @UseInterceptors(FileInterceptor('file'))
   addPhoto(@Param('id', ParseIntPipe) flatId: number, @UploadedFile() file): Promise<void> {
     return this.flatService.addPhoto(flatId, file);
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete(':id/photo/:photo')
+  deletePhoto(@Req() req, @Param('id', ParseIntPipe) flatId: number, @Param('photo') photo: string): Promise<void> {
+    const { user: { id } } = req;
+    return this.flatService.deletePhoto(id, flatId, photo);
   }
 }

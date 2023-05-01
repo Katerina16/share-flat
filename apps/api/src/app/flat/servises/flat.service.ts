@@ -72,6 +72,19 @@ export class FlatService {
 
   }
 
+
+  async deletePhoto(userId: number, flatId: number, fileName: string) {
+
+    const flat = await this.findById(flatId);
+
+    flat.photos = flat.photos.filter(photo => photo !== fileName);
+
+    await this.update(userId, flatId, flat);
+
+    await fs.unlinkSync(`photos/flat/${flatId}/${fileName}`)
+
+  }
+
   async findProperties(): Promise<PropertyEntity[]> {
     return PropertyEntity.find();
   }
