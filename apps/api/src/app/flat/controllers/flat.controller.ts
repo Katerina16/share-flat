@@ -15,10 +15,17 @@ import {JwtGuard} from "../../../guards/jwt.guard";
 import {CreateFlatDto} from "@sf/interfaces/modules/flat/dto/create.flat.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
+import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
 
 @Controller('flat')
 export class FlatController {
   constructor(private readonly flatService: FlatService) {
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('properties')
+  findProperties(): Promise<PropertyEntity[]> {
+    return this.flatService.findProperties();
   }
 
   @UseGuards(JwtGuard)
@@ -41,11 +48,10 @@ export class FlatController {
     return this.flatService.update(id, flatId, flat);
   }
 
-
   @UseGuards(JwtGuard)
   @Post(':id/photo')
   @UseInterceptors(FileInterceptor('file'))
-  pinPhoto(@Param('id', ParseIntPipe) flatId: number, @UploadedFile() file): Promise<void> {
-    return this.flatService.pinPhoto(flatId, file);
+  addPhoto(@Param('id', ParseIntPipe) flatId: number, @UploadedFile() file): Promise<void> {
+    return this.flatService.addPhoto(flatId, file);
   }
 }
