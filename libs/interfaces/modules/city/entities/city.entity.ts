@@ -1,4 +1,5 @@
-import {Entity, Column, PrimaryGeneratedColumn, Index, BaseEntity} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Index, BaseEntity, OneToMany } from 'typeorm';
+import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
 
 @Entity('city')
 export class CityEntity extends BaseEntity {
@@ -8,4 +9,7 @@ export class CityEntity extends BaseEntity {
   @Index('cityNameIndex', { unique: true })
   @Column()
   name: string;
+
+  @OneToMany(() => FlatEntity, (flats) => flats.city)
+  flats: FlatEntity[];
 }

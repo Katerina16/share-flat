@@ -2,6 +2,7 @@ import {IsNotEmpty, IsOptional, IsString} from "class-validator";
 import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
 import {PropertyValueEntity} from "@sf/interfaces/modules/flat/entities/property.value.entity";
 import {UserEntity} from "@sf/interfaces/modules/user/entities/user.entity";
+import { CityEntity } from "@sf/interfaces/modules/city/entities/city.entity";
 
 export class CreateFlatDto implements Partial<FlatEntity> {
   @IsNotEmpty({
@@ -69,6 +70,11 @@ export class CreateFlatDto implements Partial<FlatEntity> {
     message: 'Не заполнено поле $property'
   })
   propertyValues: PropertyValueEntity[];
+
+  @IsNotEmpty({
+    message: 'Не заполнено поле $property'
+  })
+  city: CityEntity;
 
   @IsOptional()
   user: UserEntity;

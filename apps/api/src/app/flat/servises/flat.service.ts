@@ -11,7 +11,7 @@ import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.en
 export class FlatService {
 
   async findById(id): Promise<FlatEntity> {
-    return FlatEntity.findOne({ where: { id }, relations: ['propertyValues', 'propertyValues.property', 'user'] });
+    return FlatEntity.findOne({ where: { id }, relations: ['propertyValues', 'propertyValues.property', 'user', 'city'] });
   }
 
   async create(userId: number, flatData: CreateFlatDto): Promise<FlatEntity> {

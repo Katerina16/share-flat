@@ -4,6 +4,7 @@ import {PropertyValueEntity} from "@sf/interfaces/modules/flat/entities/property
 import {ReviewEntity} from "@sf/interfaces/modules/flat/entities/review.entity";
 import {FreeDateEntity} from "@sf/interfaces/modules/flat/entities/free.date.entity";
 import {ReservationEntity} from "@sf/interfaces/modules/flat/entities/reservation.entity";
+import { CityEntity } from "@sf/interfaces/modules/city/entities/city.entity";
 
 @Entity('flat')
 export class FlatEntity extends BaseEntity {
@@ -66,6 +67,13 @@ export class FlatEntity extends BaseEntity {
     referencedColumnName: 'id'
   })
   user: UserEntity;
+
+  @ManyToOne(() => CityEntity, (city) => city.flats)
+  @JoinColumn({
+    name: 'city_id',
+    referencedColumnName: 'id'
+  })
+  city: CityEntity;
 
   @OneToMany(() => PropertyValueEntity, (propertyValue) => propertyValue.flat)
   propertyValues: PropertyValueEntity[];
