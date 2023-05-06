@@ -1,0 +1,7 @@
+<div *ngIf="flat$ | async as flat">
+  <div class="flex flex-wrap">
+    <div *ngFor="let photo of flat.photos" class="w-80 h-60 object-cover">
+      <img src="/api/photos/flat/{{ flat.id }}/{{ photo }}" />
+    </div>
+  </div>
+</div>

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TuiButtonModule, TuiDataListModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
-import { TuiDataListWrapperModule, TuiInputCountModule, TuiInputDateRangeModule, TuiInputModule, TuiSelectModule } from '@taiga-ui/kit';
+import { TuiCheckboxLabeledModule, TuiDataListWrapperModule, TuiInputCountModule, TuiInputDateRangeModule, TuiInputModule, TuiSelectModule } from '@taiga-ui/kit';
 
 
 @Component({
@@ -18,7 +18,8 @@ import { TuiDataListWrapperModule, TuiInputCountModule, TuiInputDateRangeModule,
     TuiSelectModule,
     ReactiveFormsModule,
     TuiInputDateRangeModule,
-    TuiInputCountModule
+    TuiInputCountModule,
+    TuiCheckboxLabeledModule
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
@@ -30,7 +31,8 @@ export class HomeComponent {
   form = this.fb.group({
     city: null,
     period: null,
-    guests: 1
+    guests: 1,
+    shared: false
   });
 
   constructor(private readonly fb: FormBuilder) {

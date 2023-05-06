@@ -1,0 +1,121 @@
+<h1 class="tui-text_h1">Размещение объявления</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2">
+  <form [formGroup]="form">
+    <tui-checkbox-labeled formControlName="shared" size="l" class="mt-4"> Объявление на обмен </tui-checkbox-labeled>
+    <tui-input formControlName="name" class="mt-4">
+      Название
+      <input tuiTextfield type="text" />
+    </tui-input>
+    <tui-error formControlName="name" [error]="[] | tuiFieldError | async"></tui-error>
+
+    <tui-text-area formControlName="description" [expandable]="true" class="mt-4"> Описание </tui-text-area>
+    <tui-error formControlName="description" [error]="[] | tuiFieldError | async"></tui-error>
+
+    <tui-select formControlName="city" class="w-full mt-4">
+      Город
+      <input tuiTextfield placeholder="Выберите город" />
+      <tui-data-list-wrapper *tuiDataList [items]="cities$ | async"></tui-data-list-wrapper>
+    </tui-select>
+    <tui-error formControlName="city" [error]="[] | tuiFieldError | async"></tui-error>
+
+    <tui-input formControlName="address" class="mt-4">
+      Адрес
+      <input tuiTextfield type="text" />
+    </tui-input>
+    <tui-error formControlName="address" [error]="[] | tuiFieldError | async"></tui-error>
+
+    <div class="grid grid-cols-2 gap-2 mt-4">
+      <tui-input-number formControlName="latitude">
+        Широта
+        <input tuiTextfield name="latitude" />
+      </tui-input-number>
+      <tui-input-number formControlName="longitude">
+        Долгота
+        <input tuiTextfield name="longitude" />
+      </tui-input-number>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 mt-4">
+      <tui-input-number formControlName="square">
+        Площадь
+        <input tuiTextfield name="square" />
+      </tui-input-number>
+      <tui-input-count formControlName="rooms" [min]="1">
+        Количество комнат
+        <input tuiTextfield placeholder="Количество комнат" />
+      </tui-input-count>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 mt-4">
+      <tui-input-count formControlName="floor" [min]="1">
+        Этаж
+        <input tuiTextfield placeholder="Этаж" />
+      </tui-input-count>
+      <tui-input-count formControlName="floors" [min]="1">
+        Этажей в доме
+        <input tuiTextfield placeholder="Этажей в доме" />
+      </tui-input-count>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 mt-4">
+      <div>
+        <tui-input-number formControlName="price" [postfix]="'RUB' | tuiCurrency">
+          Цена за сутки
+          <input tuiTextfield name="price" />
+        </tui-input-number>
+        <tui-error formControlName="price" [error]="[] | tuiFieldError | async"></tui-error>
+      </div>
+      <tui-input-count formControlName="guests" [min]="1">
+        Количество гостей
+        <input tuiTextfield placeholder="Количество гостей" />
+      </tui-input-count>
+    </div>
+
+    <ng-container *ngIf="propertiesControls">
+      <h5 class="tui-text_h5 mt-6">Основные удобства</h5>
+      <div class="grid grid-cols-2 gap-2 mt-4">
+        <ng-container *ngFor="let prop of propertiesControls" [formGroup]="prop">
+          <tui-checkbox-labeled formControlName="value" size="l">
+            {{ prop.value.property.name }}
+          </tui-checkbox-labeled>
+        </ng-container>
+      </div>
+    </ng-container>
+
+    <h5 class="tui-text_h5 mt-6">Прикрепить фото</h5>
+
+    <tui-input-files
+      class="mt-4"
+      accept="image/*"
+      [formControl]="filesControl"
+      [multiple]="true"
+      name="photos"
+      link="Выберите файл"
+      label="или перетащите в эту зону"
+    ></tui-input-files>
+
+    <tui-files class="tui-space_top-1">
+      <tui-file
+        *ngFor="let file of filesControl.value"
+        [file]="file"
+        [showDelete]="true"
+        (removed)="removeFile(file)"
+      ></tui-file>
+    </tui-files>
+
+    <div class="mt-6">
+      <button *ngIf="user$ | async; else loginButton" tuiButton type="button" (click)="save()">
+        Разместить объявление
+      </button>
+
+      <ng-template #loginButton>
+        <sf-login-button #logBtn>
+          <button tuiButton type="button" icon="tuiIconLogIn" (click)="logBtn.showDialog()">
+            Войти для размещения
+          </button>
+        </sf-login-button>
+      </ng-template>
+    </div>
+  </form>
+</div>
