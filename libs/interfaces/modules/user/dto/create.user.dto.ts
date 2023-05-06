@@ -1,5 +1,6 @@
-import {IsDate, IsEmail, IsMobilePhone, IsNotEmpty} from 'class-validator';
-import {UserEntity} from "../entities/user.entity";
+import { IsEmail, IsMobilePhone, IsNotEmpty } from 'class-validator';
+import { UserEntity } from "../entities/user.entity";
+import { Transform } from "class-transformer";
 
 
 export class CreateUserDto implements Partial<UserEntity> {
@@ -41,7 +42,10 @@ export class CreateUserDto implements Partial<UserEntity> {
   })
   phone: string;
 
-  @IsDate()
+  @IsNotEmpty({
+    message: 'Не заполнено поле $property'
+  })
+  @Transform((value) => value.value.substring(0, 10))
   birthDate: Date;
 
 }

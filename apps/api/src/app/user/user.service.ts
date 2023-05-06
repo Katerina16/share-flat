@@ -20,7 +20,7 @@ export class UserService {
 
     user.password = UserCryptoService.encrypt(user.password);
 
-    return UserEntity.create<UserEntity>(user).save();
+    return UserEntity.create<UserEntity>(user as UserEntity).save();
 
   }
 
