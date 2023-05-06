@@ -13,6 +13,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       ? req.clone({ headers: req.headers.set('Authorization', `Bearer ${token}`) })
       : req
     ),
+    map(req => req.clone({ url: '/api' + req.url })),
     switchMap(next)
   );
 

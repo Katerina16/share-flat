@@ -7,7 +7,12 @@ export const CORE_ROUTES: Route[] = [
     children: [
       {
         path: '',
+        title: 'Share Flat',
         loadComponent: () => import('../home/feature/home/home.component').then(c => c.HomeComponent)
+      },
+      {
+        path: 'flat',
+        loadChildren: () => import('../flat/flat.routes').then(m => m.FLAT_ROUTES)
       }
     ]
   }

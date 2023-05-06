@@ -10,14 +10,14 @@ export class AuthService {
   constructor(private readonly http: HttpClient) { }
 
   login(loginData: LoginUserDto): Observable<AuthUser> {
-    return this.http.post<AuthUser>('/api/auth/login', loginData);
+    return this.http.post<AuthUser>('/auth/login', loginData);
   }
 
   register(registerData: CreateUserDto): Observable<void> {
-    return this.http.post<void>('/api/auth/register', registerData);
+    return this.http.post<void>('/auth/register', registerData);
   }
 
   getCurrentUser(): Observable<User> {
-    return this.http.get<User>('/api/user/current');
+    return this.http.get<User>('/user/current');
   }
 }

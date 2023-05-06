@@ -1,16 +1,24 @@
-<nav tuiMode="onDark" class="flex justify-between px-6 py-3 bg-neutral-800">
+<nav tuiMode="onDark" class="flex flex-wrap justify-between px-6 py-3 bg-neutral-800">
   <a routerLink="/" class="text-3xl text-white font-bold">
     <span class="text-blue-300">S</span>
     <span>hare</span>
     <span class="text-blue-300">F</span>
     <span>lat</span>
   </a>
-  <div class="flex justify-end items-center">
-    <a routerLink="/favorites" class="flex items-center text-white pr-2">
+  <div class="flex flex-wrap justify-end items-center">
+    <a routerLink="/flat/add" routerLinkActive="text-blue-300 font-bold" class="flex items-center text-white pr-2">
+      <tui-svg src="tuiIconPlus" class="icon"></tui-svg>
+      <span class="ml-1">Разместить объявление</span>
+    </a>
+    <a
+      routerLink="/favorites"
+      routerLinkActive="text-blue-300 font-bold"
+      class="flex items-center text-white pr-2 ml-4"
+    >
       <tui-svg src="tuiIconHeart" class="icon"></tui-svg>
       <span class="ml-1">Избранное</span>
     </a>
-    <a routerLink="/reservations" class="flex items-center text-blue-300 font-bold ml-4">
+    <a routerLink="/reservations" routerLinkActive="text-blue-300 font-bold" class="flex items-center text-white ml-4">
       <tui-svg src="tuiIconCalendar" class="icon"></tui-svg>
       <span class="ml-1">Мои бронирования</span>
     </a>

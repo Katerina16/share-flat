@@ -44,7 +44,7 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = new FormGroup<RegisterForm>({
-      firstName: new FormControl('', { nonNullable: true, validators: Validators.required }),
+      firstName: new FormControl('', { nonNullable: true }),
       lastName: new FormControl('', { nonNullable: true, validators: Validators.required }),
       middleName: new FormControl('', { nonNullable: true, validators: Validators.required }),
       birthDate: new FormControl(new Date, { nonNullable: true, validators: Validators.required }),

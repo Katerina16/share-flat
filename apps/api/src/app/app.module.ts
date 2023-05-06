@@ -1,24 +1,24 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { CityEntity } from "@sf/interfaces/modules/city/entities/city.entity";
+import { ChatEntity } from "@sf/interfaces/modules/flat/entities/chat.entity";
+import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
+import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.entity";
+import { MessageEntity } from "@sf/interfaces/modules/flat/entities/message.entity";
+import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
+import { PropertyValueEntity } from "@sf/interfaces/modules/flat/entities/property.value.entity";
+import { ReservationEntity } from "@sf/interfaces/modules/flat/entities/reservation.entity";
+import { ReviewEntity } from "@sf/interfaces/modules/flat/entities/review.entity";
 import { UserEntity } from "@sf/interfaces/modules/user/entities/user.entity";
+import { join } from 'path';
 import config from '../config';
 import { AuthModule } from "./auth/auth.module";
+import { CityModule } from "./city/city.module";
+import { FlatModule } from './flat/flat.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
-import {CityEntity} from "@sf/interfaces/modules/city/entities/city.entity";
-import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
-import {PropertyValueEntity} from "@sf/interfaces/modules/flat/entities/property.value.entity";
-import {PropertyEntity} from "@sf/interfaces/modules/flat/entities/property.entity";
-import {FreeDateEntity} from "@sf/interfaces/modules/flat/entities/free.date.entity";
-import {ChatEntity} from "@sf/interfaces/modules/flat/entities/chat.entity";
-import {MessageEntity} from "@sf/interfaces/modules/flat/entities/message.entity";
-import {ReservationEntity} from "@sf/interfaces/modules/flat/entities/reservation.entity";
-import {ReviewEntity} from "@sf/interfaces/modules/flat/entities/review.entity";
-import {FlatModule} from "./flat/flat.module";
-import {CityModule} from "./city/city.module";
-import {ServeStaticModule} from "@nestjs/serve-static";
-import { join } from 'path';
 
 @Module({
   imports: [
@@ -58,8 +58,8 @@ import { join } from 'path';
     UserModule,
     AuthModule,
     TokenModule,
-    FlatModule,
-    CityModule
+    CityModule,
+    FlatModule
   ],
   controllers: [],
   providers: [],

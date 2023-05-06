@@ -1,11 +1,11 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateFlatDto } from "@sf/interfaces/modules/flat/dto/create.flat.dto";
 import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
-import { UserEntity } from "@sf/interfaces/modules/user/entities/user.entity";
-import { PropertyValueEntity } from "@sf/interfaces/modules/flat/entities/property.value.entity";
-import fs from "fs";
 import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
-
+import { PropertyValueEntity } from "@sf/interfaces/modules/flat/entities/property.value.entity";
+import { UserEntity } from "@sf/interfaces/modules/user/entities/user.entity";
+import crypto from "crypto";
+import fs from "fs";
 
 @Injectable()
 export class FlatService {
