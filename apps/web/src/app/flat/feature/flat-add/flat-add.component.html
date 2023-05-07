@@ -26,11 +26,11 @@
     <tui-error formControlName="address" [error]="[] | tuiFieldError | async"></tui-error>
 
     <div class="grid grid-cols-2 gap-2 mt-4">
-      <tui-input-number formControlName="latitude">
+      <tui-input-number formControlName="latitude" [precision]="6">
         Широта
         <input tuiTextfield name="latitude" />
       </tui-input-number>
-      <tui-input-number formControlName="longitude">
+      <tui-input-number formControlName="longitude" [precision]="6">
         Долгота
         <input tuiTextfield name="longitude" />
       </tui-input-number>
