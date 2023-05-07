@@ -1,17 +1,62 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateFlatDto } from "@sf/interfaces/modules/flat/dto/create.flat.dto";
 import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
-import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
 import { PropertyValueEntity } from "@sf/interfaces/modules/flat/entities/property.value.entity";
 import { UserEntity } from "@sf/interfaces/modules/user/entities/user.entity";
 import crypto from "crypto";
 import fs from "fs";
+import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
+import * as dateFns from 'date-fns'
+import { LessThanOrEqual } from "typeorm";
+
 
 @Injectable()
 export class FlatService {
 
+  async find({ shared, cityId, from, to, guests }): Promise<FlatEntity[]> {
+    const flats= await FlatEntity.find({
+      relations: ['city', 'propertyValues', 'propertyValues.property', 'user', 'freeDates', 'reservations', 'sharedReservations'],
+      where: {
+        city: { id: cityId },
+        guests: LessThanOrEqual(guests),
+        shared,
+      }
+    });
+
+    return flats.filter(flat => {
+      for (const reservation of flat.reservations) {
+        if (
+          !(dateFns.isBefore(new Date(to), new Date(reservation.from))
+          || dateFns.isAfter(new Date(from), new Date(reservation.to))
+        )) {
+          return false;
+        }
+      }
+
+      if (shared) {
+        for (const reservation of flat.sharedReservations) {
+          if (
+            !(dateFns.isBefore(new Date(to), new Date(reservation.from))
+              || dateFns.isAfter(new Date(from), new Date(reservation.to))
+            )) {
+            return false;
+          }
+        }
+      }
+
+      delete flat.reservations;
+      delete flat.sharedReservations;
+
+      return true;
+
+    });
+  }
+
   async findById(id): Promise<FlatEntity> {
-    return FlatEntity.findOne({ where: { id }, relations: ['propertyValues', 'propertyValues.property', 'user', 'city'] });
+    return FlatEntity.findOne({
+      where: { id },
+      relations: ['propertyValues', 'propertyValues.property', 'user', 'city']
+    });
   }
 
   async create(userId: number, flatData: CreateFlatDto): Promise<FlatEntity> {

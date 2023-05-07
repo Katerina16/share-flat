@@ -1,20 +1,20 @@
 import {
   Body,
-  Controller, Delete,
+  Controller, DefaultValuePipe, Delete,
   Get,
-  Param,
+  Param, ParseBoolPipe,
   ParseIntPipe,
-  Post, Put,
+  Post, Put, Query,
   Req,
   UploadedFile,
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
-import {FlatService} from "../servises/flat.service";
-import {JwtGuard} from "../../../guards/jwt.guard";
-import {CreateFlatDto} from "@sf/interfaces/modules/flat/dto/create.flat.dto";
-import {FileInterceptor} from "@nestjs/platform-express";
-import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
+import { FlatService } from "../servises/flat.service";
+import { JwtGuard } from "../../../guards/jwt.guard";
+import { CreateFlatDto } from "@sf/interfaces/modules/flat/dto/create.flat.dto";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
 import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
 
 @Controller('flat')
@@ -26,6 +26,19 @@ export class FlatController {
   @Get('properties')
   findProperties(): Promise<PropertyEntity[]> {
     return this.flatService.findProperties();
+  }
+
+  @UseGuards(JwtGuard)
+  @Get()
+  find(
+    @Query('shared', ParseBoolPipe) shared: boolean,
+    @Query('city') cityId: number,
+    @Query('from') from: string,
+    @Query('to') to: string,
+    @Query('guests', new DefaultValuePipe('1'), ParseIntPipe) guests: number,
+  ): Promise<FlatEntity[]> {
+
+    return this.flatService.find({ shared, cityId, from, to, guests });
   }
 
   @UseGuards(JwtGuard)

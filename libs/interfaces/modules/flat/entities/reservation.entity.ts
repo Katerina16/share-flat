@@ -1,6 +1,7 @@
 import {Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, JoinColumn } from 'typeorm';
 import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
 import {ChatEntity} from "@sf/interfaces/modules/flat/entities/chat.entity";
+import { UserEntity } from "@sf/interfaces/modules/user/entities/user.entity";
 
 @Entity('reservation')
 export class ReservationEntity extends BaseEntity {
@@ -31,6 +32,13 @@ export class ReservationEntity extends BaseEntity {
     referencedColumnName: 'id'
   })
   sharedFlat: FlatEntity;
+
+  @ManyToOne(() => UserEntity, (user) => user.reservations)
+  @JoinColumn({
+    name: 'user_id',
+    referencedColumnName: 'id'
+  })
+  user: UserEntity;
 
   @ManyToOne(() => ChatEntity, (chat) => chat.messages)
   @JoinColumn({

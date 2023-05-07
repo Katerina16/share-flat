@@ -2,6 +2,7 @@ import {Entity, Column, PrimaryGeneratedColumn, Index, BaseEntity, OneToMany} fr
 import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
 import {ReviewEntity} from "@sf/interfaces/modules/flat/entities/review.entity";
 import {MessageEntity} from "@sf/interfaces/modules/flat/entities/message.entity";
+import { ReservationEntity } from "@sf/interfaces/modules/flat/entities/reservation.entity";
 
 @Entity('user')
 export class UserEntity extends BaseEntity {
@@ -52,6 +53,9 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany(() => FlatEntity, (flats) => flats.user)
   flats: FlatEntity[];
+
+  @OneToMany(() => ReservationEntity, (reservation) => reservation.user)
+  reservations: ReservationEntity[];
 
   @OneToMany(() => ReviewEntity, (review) => review.user)
   reviews: ReviewEntity[];
