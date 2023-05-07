@@ -1,36 +1,55 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
 import { ReviewEntity } from '@sf/interfaces/modules/flat/entities/review.entity';
-import { TuiSvgModule } from '@taiga-ui/core';
+import { TuiButtonModule, TuiSvgModule } from '@taiga-ui/core';
 import { TuiCarouselModule, TuiIslandModule, TuiPaginationModule } from '@taiga-ui/kit';
-import { Observable, map, switchMap } from 'rxjs';
+import { Observable, combineLatest, map, switchMap } from 'rxjs';
+import { selectCurrentUser } from '../../../core/store/auth/selectors';
+import { AppState } from '../../../core/store/reducers';
 
 @Component({
   selector: 'sf-flat-card',
   standalone: true,
-  imports: [CommonModule, TuiCarouselModule, TuiPaginationModule, TuiSvgModule, TuiIslandModule],
+  imports: [
+    CommonModule,
+    TuiCarouselModule,
+    TuiPaginationModule,
+    TuiSvgModule,
+    TuiIslandModule,
+    TuiButtonModule,
+    RouterModule
+  ],
   templateUrl: './flat-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlatCardComponent implements OnInit {
 
   imageIndex = 0;
+
   flat$: Observable<FlatEntity>;
+  isOwnFlat$: Observable<boolean>;
+
   reviews$: Observable<ReviewEntity[]>;
   reviewsCount$: Observable<number>;
   reviewsRating$: Observable<number>;
 
   constructor(
     private http: HttpClient,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private store: Store<AppState>
   ) { }
 
   ngOnInit(): void {
     this.flat$ = this.route.params.pipe(
       switchMap(params => this.http.get<FlatEntity>(`/flat/${params['id']}`))
+    );
+
+    this.isOwnFlat$ = combineLatest([this.flat$, this.store.select(selectCurrentUser)]).pipe(
+      map(([flat, user]) => flat.user.id === user?.id)
     );
 
     this.reviews$ = this.route.params.pipe(

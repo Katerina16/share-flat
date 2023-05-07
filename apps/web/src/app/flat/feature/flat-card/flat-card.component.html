@@ -1,5 +1,18 @@
 <ng-container *ngIf="flat$ | async as flat">
-  <h1 class="tui-text_h1">{{ flat.name }}</h1>
+  <h1 class="tui-text_h1 flex justify-between items-center">
+    {{ flat.name }}
+    <button
+      *ngIf="isOwnFlat$ | async"
+      tuiButton
+      routerLink="/flat/edit/{{ flat.id }}"
+      type="button"
+      size="m"
+      appearance="flat"
+      icon="tuiIconEdit2"
+    >
+      Редактировать
+    </button>
+  </h1>
 
   <div class="mt-3">
     <div class="flex items-center">
