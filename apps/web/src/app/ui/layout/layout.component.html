@@ -11,24 +11,15 @@
       <span class="ml-1">Разместить объявление</span>
     </a>
 
-    <ng-container *ngIf="user$ | async">
-      <a
-        routerLink="/favorites"
-        routerLinkActive="text-blue-400 font-bold"
-        class="flex items-center text-white pr-2 ml-4"
-      >
-        <tui-svg src="tuiIconHeart" class="icon"></tui-svg>
-        <span class="ml-1">Избранное</span>
-      </a>
-      <a
-        routerLink="/reservations"
-        routerLinkActive="text-blue-400 font-bold"
-        class="flex items-center text-white ml-4"
-      >
-        <tui-svg src="tuiIconCalendar" class="icon"></tui-svg>
-        <span class="ml-1">Мои бронирования</span>
-      </a>
-    </ng-container>
+    <a
+      *ngIf="user$ | async"
+      routerLink="/reservations"
+      routerLinkActive="text-blue-400 font-bold"
+      class="flex items-center text-white ml-4"
+    >
+      <tui-svg src="tuiIconCalendar" class="icon"></tui-svg>
+      <span class="ml-1">Мои бронирования</span>
+    </a>
 
     <sf-user-menu></sf-user-menu>
   </div>

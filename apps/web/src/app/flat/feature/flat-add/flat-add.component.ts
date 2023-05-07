@@ -10,7 +10,7 @@ import { PropertyEntity } from '@sf/interfaces/modules/flat/entities/property.en
 import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
 import { TuiButtonModule, TuiDataListModule, TuiErrorModule } from '@taiga-ui/core';
 import { TuiCheckboxLabeledModule, TuiDataListWrapperModule, TuiFieldErrorPipeModule, TuiInputCountModule, TuiInputDateModule, TuiInputFilesModule, TuiInputModule, TuiInputNumberModule, TuiInputPhoneModule, TuiSelectModule, TuiTextAreaModule, tuiItemsHandlersProvider } from '@taiga-ui/kit';
-import { forkJoin, map, switchMap } from 'rxjs';
+import { concatMap, delay, from, mergeMap, of, tap, toArray } from 'rxjs';
 import { selectCurrentUser } from '../../../core/store/auth/selectors';
 import { AppState } from '../../../core/store/reducers';
 import { formValidatorProvider } from '../../../shared/form-validators-provider';
@@ -108,13 +108,20 @@ export class FlatAddComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
+
+    let flatId: number;
     this.http.post<FlatEntity>('/flat', this.form.value)
       .pipe(
-        switchMap(flat => forkJoin(this.filesControl.value.map((file: File) => {
+        tap(flat => flatId = flat.id),
+        mergeMap(() => from((this.filesControl.value || []) as File[]).pipe(
+          concatMap(item => of(item).pipe(delay(10)))
+        )),
+        mergeMap((file) => {
           const formData = new FormData();
           formData.append('file', file, file.name);
-          return this.http.post(`/flat/${flat.id}/photo`, formData);
-        })).pipe(map(() => flat.id)))
+          return this.http.post(`/flat/${flatId}/photo`, formData);
+        }),
+        toArray()
       )
       .subscribe(flatId => this.router.navigate([`/flat/card/${flatId}`]));
   }
