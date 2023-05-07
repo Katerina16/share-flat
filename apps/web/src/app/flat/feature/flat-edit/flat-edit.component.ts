@@ -8,9 +8,9 @@ import { CityEntity } from '@sf/interfaces/modules/city/entities/city.entity';
 import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
 import { PropertyEntity } from '@sf/interfaces/modules/flat/entities/property.entity';
 import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
-import { TuiButtonModule, TuiDataListModule, TuiErrorModule, TuiSvgModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
+import { TuiAlertService, TuiButtonModule, TuiDataListModule, TuiErrorModule, TuiNotification, TuiSvgModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { TuiCheckboxLabeledModule, TuiDataListWrapperModule, TuiFieldErrorPipeModule, TuiInputCountModule, TuiInputDateModule, TuiInputFilesModule, TuiInputModule, TuiInputNumberModule, TuiInputPhoneModule, TuiSelectModule, TuiTextAreaModule, tuiItemsHandlersProvider } from '@taiga-ui/kit';
-import { forkJoin, of, switchMap } from 'rxjs';
+import { combineLatest, filter, forkJoin, map, of, switchMap } from 'rxjs';
 import { selectCurrentUser } from '../../../core/store/auth/selectors';
 import { AppState } from '../../../core/store/reducers';
 import { formValidatorProvider } from '../../../shared/form-validators-provider';
@@ -62,7 +62,8 @@ export class FlatEditComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private alertService: TuiAlertService
   ) { }
 
   get propertiesControls(): FormGroup[] {
@@ -71,11 +72,25 @@ export class FlatEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.pipe(
-      switchMap(params => forkJoin([
+      switchMap(params => combineLatest([
         this.http.get<FlatEntity>(`/flat/${params['id']}`),
-        this.http.get<PropertyEntity[]>('/flat/properties')
-      ]))
-    ).subscribe(([flat, properties]) => {
+        this.user$
+      ])),
+      filter(([flat, user]) => {
+        if (flat.user.id !== user?.id) {
+          this.alertService.open('Ошибка доступа', { status: TuiNotification.Error }).subscribe();
+          this.router.navigate(['/']).catch(console.error);
+          return false;
+        }
+        return true;
+      }),
+      switchMap(([flat]) => {
+        return this.http.get<PropertyEntity[]>('/flat/properties')
+          .pipe(
+            map(properties => ({ flat, properties }))
+          );
+      })
+    ).subscribe(({ flat, properties }) => {
       this.flat = flat;
       this.form = new FormGroup({
         name: new FormControl(flat.name, { nonNullable: true, validators: Validators.required }),

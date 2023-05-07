@@ -47,7 +47,7 @@ export class RegisterComponent implements OnInit {
       firstName: new FormControl('', { nonNullable: true }),
       lastName: new FormControl('', { nonNullable: true, validators: Validators.required }),
       middleName: new FormControl('', { nonNullable: true, validators: Validators.required }),
-      birthDate: new FormControl(new Date, { nonNullable: true, validators: Validators.required }),
+      birthDate: new FormControl(new Date(), { nonNullable: true, validators: Validators.required }),
       phone: new FormControl('', { nonNullable: true, validators: Validators.required }),
       email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
       password: new FormControl('', { nonNullable: true, validators: Validators.required })

@@ -1,6 +1,6 @@
+import { Transform } from "class-transformer";
 import { IsEmail, IsMobilePhone, IsNotEmpty } from 'class-validator';
 import { UserEntity } from "../entities/user.entity";
-import { Transform } from "class-transformer";
 
 
 export class CreateUserDto implements Partial<UserEntity> {

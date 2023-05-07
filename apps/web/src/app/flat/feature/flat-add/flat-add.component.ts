@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -56,7 +56,8 @@ export class FlatAddComponent implements OnInit {
   constructor(
     private readonly store: Store<AppState>,
     private readonly http: HttpClient,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly cdRef: ChangeDetectorRef
   ) { }
 
   get propertiesControls(): FormGroup[] {
@@ -91,6 +92,8 @@ export class FlatAddComponent implements OnInit {
           })
         }))));
     });
+
+    this.cdRef.detectChanges();
 
   }
 

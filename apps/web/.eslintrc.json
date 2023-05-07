@@ -44,7 +44,6 @@
         ],
         "no-empty": "error",
         "no-empty-function": ["error", { "allow": ["constructors"] }],
-        "no-magic-numbers": ["error", { "ignoreArrayIndexes": true, "ignore": [-1, 0, 1] }],
         "no-multiple-empty-lines": "error",
         "no-param-reassign": ["error", { "props": false }],
         "no-unreachable": "error",

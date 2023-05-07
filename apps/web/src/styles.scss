@@ -2,10 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-// :root {
-//   --tui-primary: #f87171;
-//   --tui-primary-hover: #e95353;
-// }
+:root {
+  --tui-primary: #60a5fa;
+}
 
 .text-primary {
   color: var(--tui-primary);
