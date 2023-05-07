@@ -8,6 +8,7 @@ import fs from "fs";
 import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
 import * as dateFns from 'date-fns'
 import { LessThanOrEqual } from "typeorm";
+import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.entity";
 
 
 @Injectable()
@@ -55,7 +56,7 @@ export class FlatService {
   async findById(id): Promise<FlatEntity> {
     return FlatEntity.findOne({
       where: { id },
-      relations: ['propertyValues', 'propertyValues.property', 'user', 'city']
+      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates']
     });
   }
 
@@ -71,6 +72,12 @@ export class FlatService {
 
     await PropertyValueEntity.insert(flat.propertyValues);
 
+    for (const freeDate of flat.freeDates) {
+      freeDate.flat = { id: flat.id } as FlatEntity;
+    }
+
+    await FreeDateEntity.insert(flat.freeDates);
+
     return flat;
 
   }
@@ -83,8 +90,9 @@ export class FlatService {
       throw new ForbiddenException();
     }
 
-    const { propertyValues } = flatData;
+    const { propertyValues, freeDates } = flatData;
     delete flatData.propertyValues;
+    delete flatData.freeDates;
 
     await FlatEntity.update<FlatEntity>({ id: flatId }, flatData);
 
@@ -97,6 +105,16 @@ export class FlatService {
     }
 
     await PropertyValueEntity.insert(propertyValues);
+
+    for (const freeDate of flat.freeDates) {
+      await FreeDateEntity.delete(freeDate.id);
+    }
+
+    for (const freeDate of freeDates) {
+      freeDate.flat = { id: flat.id } as FlatEntity;
+    }
+
+    await FreeDateEntity.insert(freeDates);
 
     return flat;
   }
