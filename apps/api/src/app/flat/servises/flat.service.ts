@@ -15,7 +15,7 @@ import { ReviewEntity } from "@sf/interfaces/modules/flat/entities/review.entity
 @Injectable()
 export class FlatService {
 
-  async find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, rooms }): Promise<{ count: number, flats: FlatEntity[] }> {
+  async find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, rooms, properties }): Promise<{ count: number, flats: FlatEntity[] }> {
 
     const flats = await FlatEntity.find({
       relations: ['city', 'propertyValues', 'propertyValues.property', 'user', 'freeDates', 'reservations', 'sharedReservations', 'reviews'],
@@ -59,6 +59,12 @@ export class FlatService {
         }
       }
 
+      if (properties) {
+        if (!(properties.every(property => flat.propertyValues.map(propertyValue => propertyValue.property.id).includes(property)))) {
+          return false;
+        }
+      }
+
       flat.reviewsCount = flat.reviews.length;
 
       flat.reviewsRating = flat.reviewsCount > 0
@@ -70,6 +76,7 @@ export class FlatService {
       delete flat.reservations;
       delete flat.sharedReservations;
       delete flat.reviews;
+      delete flat.propertyValues;
 
       return true;
 

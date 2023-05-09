@@ -2,7 +2,7 @@ import {
   Body,
   Controller, DefaultValuePipe, Delete,
   Get,
-  Param, ParseBoolPipe,
+  Param, ParseArrayPipe, ParseBoolPipe,
   ParseIntPipe,
   Post, Put, Query,
   Req,
@@ -39,11 +39,12 @@ export class FlatController {
     @Query('squareFrom') squareFrom?: number,
     @Query('squareTo') squareTo?: number,
     @Query('rooms') rooms?: number,
+    @Query('properties', new ParseArrayPipe({ items: Number, separator: ',', optional: true })) properties?: number[],
     @Query('limit', new DefaultValuePipe('20'), ParseIntPipe) limit?: number,
     @Query('offset', new DefaultValuePipe('0'), ParseIntPipe) offset?: number,
   ): Promise<{ count: number, flats: FlatEntity[] }> {
 
-    return this.flatService.find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, rooms });
+    return this.flatService.find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, rooms, properties });
   }
 
   @UseGuards(JwtGuard)
