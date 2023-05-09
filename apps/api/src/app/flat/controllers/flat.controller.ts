@@ -37,13 +37,15 @@ export class FlatController {
     @Query('guests', new DefaultValuePipe('1'), ParseIntPipe) guests: number,
     @Query('squareFrom') squareFrom?: number,
     @Query('squareTo') squareTo?: number,
+    @Query('priceFrom') priceFrom?: number,
+    @Query('priceTo') priceTo?: number,
     @Query('rooms') rooms?: number,
     @Query('properties', new ParseArrayPipe({ items: Number, separator: ',', optional: true })) properties?: number[],
     @Query('limit', new DefaultValuePipe('20'), ParseIntPipe) limit?: number,
     @Query('offset', new DefaultValuePipe('0'), ParseIntPipe) offset?: number,
   ): Promise<{ count: number, flats: FlatEntity[] }> {
 
-    return this.flatService.find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, rooms, properties });
+    return this.flatService.find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, priceFrom, priceTo, rooms, properties });
   }
 
   @UseGuards(JwtGuard)

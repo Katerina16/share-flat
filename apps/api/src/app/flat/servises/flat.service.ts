@@ -14,7 +14,7 @@ import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.e
 @Injectable()
 export class FlatService {
 
-  async find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, rooms, properties }): Promise<{ count: number, flats: FlatEntity[] }> {
+  async find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, priceFrom, priceTo, rooms, properties }): Promise<{ count: number, flats: FlatEntity[] }> {
 
     const flats = await FlatEntity.find({
       relations: ['city', 'propertyValues', 'propertyValues.property', 'user', 'freeDates', 'reservations', 'sharedReservations', 'reviews'],
@@ -48,6 +48,12 @@ export class FlatService {
 
       if (squareFrom && squareTo) {
         if (!(flat.square >= squareFrom && flat.square <= squareTo)) {
+          return false;
+        }
+      }
+
+      if (priceFrom && priceTo) {
+        if (!(flat.price >= priceFrom && flat.price <= priceTo)) {
           return false;
         }
       }
