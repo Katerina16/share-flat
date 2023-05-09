@@ -9,7 +9,6 @@ import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.en
 import * as dateFns from 'date-fns'
 import { MoreThanOrEqual } from "typeorm";
 import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.entity";
-import { ReviewEntity } from "@sf/interfaces/modules/flat/entities/review.entity";
 
 
 @Injectable()
@@ -92,12 +91,6 @@ export class FlatService {
     return FlatEntity.findOne({
       where: { id },
       relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates']
-    });
-  }
-
-  async findReviews(id): Promise<ReviewEntity[]> {
-    return ReviewEntity.find({
-      where: { flat: { id } },
     });
   }
 

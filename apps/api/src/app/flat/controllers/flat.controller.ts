@@ -16,7 +16,6 @@ import { CreateFlatDto } from "@sf/interfaces/modules/flat/dto/create.flat.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
 import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
-import { ReviewEntity } from "@sf/interfaces/modules/flat/entities/review.entity";
 
 @Controller('flat')
 export class FlatController {
@@ -51,11 +50,6 @@ export class FlatController {
   @Get(':id')
   findById(@Param('id', ParseIntPipe) id: number): Promise<FlatEntity> {
     return this.flatService.findById(id);
-  }
-
-  @Get(':id/reviews')
-  findReviews(@Param('id', ParseIntPipe) id: number): Promise<ReviewEntity[]> {
-    return this.flatService.findReviews(id);
   }
 
   @UseGuards(JwtGuard)
