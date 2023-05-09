@@ -36,9 +36,14 @@ export class FlatController {
     @Query('from') from: string,
     @Query('to') to: string,
     @Query('guests', new DefaultValuePipe('1'), ParseIntPipe) guests: number,
-  ): Promise<FlatEntity[]> {
+    @Query('squareFrom') squareFrom?: number,
+    @Query('squareTo') squareTo?: number,
+    @Query('rooms') rooms?: number,
+    @Query('limit', new DefaultValuePipe('20'), ParseIntPipe) limit?: number,
+    @Query('offset', new DefaultValuePipe('0'), ParseIntPipe) offset?: number,
+  ): Promise<{ count: number, flats: FlatEntity[] }> {
 
-    return this.flatService.find({ shared, cityId, from, to, guests });
+    return this.flatService.find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, rooms });
   }
 
   @UseGuards(JwtGuard)

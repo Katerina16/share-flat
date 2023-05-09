@@ -7,7 +7,7 @@ import crypto from "crypto";
 import fs from "fs";
 import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
 import * as dateFns from 'date-fns'
-import { MoreThanOrEqual } from "typeorm";
+import { FindManyOptions, MoreThanOrEqual } from "typeorm";
 import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.entity";
 import { ReviewEntity } from "@sf/interfaces/modules/flat/entities/review.entity";
 
@@ -15,8 +15,9 @@ import { ReviewEntity } from "@sf/interfaces/modules/flat/entities/review.entity
 @Injectable()
 export class FlatService {
 
-  async find({ shared, cityId, from, to, guests }): Promise<FlatEntity[]> {
-    const flats= await FlatEntity.find({
+  async find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, rooms }): Promise<{ count: number, flats: FlatEntity[] }> {
+
+    const flats = await FlatEntity.find({
       relations: ['city', 'propertyValues', 'propertyValues.property', 'user', 'freeDates', 'reservations', 'sharedReservations', 'reviews'],
       where: {
         city: { id: cityId },
@@ -25,12 +26,12 @@ export class FlatService {
       }
     });
 
-    return flats.filter(flat => {
+    const filteredFlats = flats.filter(flat => {
       for (const reservation of flat.reservations) {
         if (
           !(dateFns.isBefore(new Date(to), new Date(reservation.from))
-          || dateFns.isAfter(new Date(from), new Date(reservation.to))
-        )) {
+            || dateFns.isAfter(new Date(from), new Date(reservation.to))
+          )) {
           return false;
         }
       }
@@ -43,6 +44,18 @@ export class FlatService {
             )) {
             return false;
           }
+        }
+      }
+
+      if (squareFrom && squareTo) {
+        if (!(flat.square >= squareFrom && flat.square <= squareTo)) {
+          return false;
+        }
+      }
+
+      if (rooms) {
+        if (flat.rooms !== rooms) {
+          return false;
         }
       }
 
@@ -61,6 +74,11 @@ export class FlatService {
       return true;
 
     });
+
+    return {
+      count: filteredFlats.length,
+      flats: filteredFlats.slice(offset, limit + offset),
+    }
   }
 
   async findById(id): Promise<FlatEntity> {
@@ -72,7 +90,7 @@ export class FlatService {
 
   async findReviews(id): Promise<ReviewEntity[]> {
     return ReviewEntity.find({
-      where: { flat: { id } } ,
+      where: { flat: { id } },
     });
   }
 
