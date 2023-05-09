@@ -17,7 +17,7 @@ export const FLAT_ROUTES: Route[] = [
     loadComponent: () => import('./feature/flat-edit/flat-edit.component').then(c => c.FlatEditComponent)
   },
   {
-    path: 'list',
+    path: 'search',
     title: 'Объявления - Share Flat',
     loadComponent: () => import('./feature/flat-list/flat-list.component').then(c => c.FlatListComponent)
   },

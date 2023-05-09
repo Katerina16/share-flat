@@ -7,7 +7,7 @@
           <tui-select formControlName="city" class="w-full">
             Город
             <input tuiTextfield placeholder="Выберите город" />
-            <tui-data-list-wrapper *tuiDataList [items]="items"></tui-data-list-wrapper>
+            <tui-data-list-wrapper *tuiDataList [items]="cities$ | async"></tui-data-list-wrapper>
           </tui-select>
 
           <tui-input-date-range formControlName="period" class="ml-2 w-full">
@@ -25,7 +25,7 @@
           </div>
         </div>
 
-        <button tuiButton type="button" class="ml-2">Найти</button>
+        <button tuiButton type="button" class="ml-2" (click)="search()">Найти</button>
       </div>
     </form>
   </div>

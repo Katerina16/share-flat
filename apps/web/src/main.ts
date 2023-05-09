@@ -1,5 +1,7 @@
+import { registerLocaleData } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { importProvidersFrom, isDevMode } from '@angular/core';
+import localeRu from '@angular/common/locales/ru';
+import { LOCALE_ID, importProvidersFrom, isDevMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -14,6 +16,7 @@ import { errorInterceptor } from './app/core/interceptors/error.interceptor';
 import { appEffects } from './app/core/store/effects';
 import { appReducers } from './app/core/store/reducers';
 
+registerLocaleData(localeRu, 'ru');
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -31,6 +34,7 @@ bootstrapApplication(AppComponent, {
         trace: false,
         traceLimit: 75
       })
-    ])
+    ]),
+    { provide: LOCALE_ID, useValue: 'ru-RU' }
   ]
 });

@@ -1,8 +1,19 @@
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { CityEntity } from '@sf/interfaces/modules/city/entities/city.entity';
+import { TuiDayRange } from '@taiga-ui/cdk';
 import { TuiButtonModule, TuiDataListModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
-import { TuiCheckboxLabeledModule, TuiDataListWrapperModule, TuiInputCountModule, TuiInputDateRangeModule, TuiInputModule, TuiSelectModule } from '@taiga-ui/kit';
+import { TuiCheckboxLabeledModule, TuiDataListWrapperModule, TuiInputCountModule, TuiInputDateRangeModule, TuiInputModule, TuiSelectModule, tuiItemsHandlersProvider } from '@taiga-ui/kit';
+
+interface HomeSearchForm {
+  city: FormControl<CityEntity | null>,
+  period: FormControl<TuiDayRange | null>,
+  guests: FormControl<number>,
+  shared: FormControl<boolean>
+}
 
 
 @Component({
@@ -21,20 +32,43 @@ import { TuiCheckboxLabeledModule, TuiDataListWrapperModule, TuiInputCountModule
     TuiInputCountModule,
     TuiCheckboxLabeledModule
   ],
+  providers: [tuiItemsHandlersProvider({ stringify: (city: CityEntity) => city.name })],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
-  items = ['Москва', 'Санкт-Петербург', 'Сочи'];
+  cities$ = this.http.get<CityEntity[]>('/city');
 
-  form = this.fb.group({
-    city: null,
-    period: null,
-    guests: 1,
-    shared: false
+  form = new FormGroup<HomeSearchForm>({
+    city: new FormControl(null, { validators: Validators.required }),
+    period: new FormControl(null, { validators: Validators.required }),
+    guests: new FormControl(1, { nonNullable: true }),
+    shared: new FormControl(false, { nonNullable: true })
   });
 
-  constructor(private readonly fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private router: Router
+  ) { }
+
+  search(): void {
+    this.form.markAllAsTouched();
+    if (this.form.invalid) {
+      return;
+    }
+
+    const formValue = this.form.getRawValue();
+
+    const queryParams = {
+      city: formValue.city?.id,
+      guests: formValue.guests,
+      from: formValue.period?.from.toLocalNativeDate().toISOString().substring(0, 10),
+      to: formValue.period?.to.toLocalNativeDate().toISOString().substring(0, 10),
+      shared: formValue.shared
+    };
+
+    this.router.navigate(['/flat/search'], { queryParams }).catch(console.error);
   }
 }
