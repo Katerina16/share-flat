@@ -7,7 +7,7 @@ import crypto from "crypto";
 import fs from "fs";
 import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
 import * as dateFns from 'date-fns'
-import { FindManyOptions, MoreThanOrEqual } from "typeorm";
+import { MoreThanOrEqual } from "typeorm";
 import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.entity";
 import { ReviewEntity } from "@sf/interfaces/modules/flat/entities/review.entity";
 
