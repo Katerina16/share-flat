@@ -28,7 +28,6 @@ export class FlatController {
     return this.flatService.findProperties();
   }
 
-  @UseGuards(JwtGuard)
   @Get()
   find(
     @Query('shared', ParseBoolPipe) shared: boolean,

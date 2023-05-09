@@ -33,9 +33,9 @@
         </div>
         <div class="col-span-1 p-4 border-l h-full flex flex-col justify-between">
           <div class="flex items-center">
-            <div class="text-gray-500">Отзывов: 12</div>
+            <div class="text-gray-500">Отзывов: {{ flat.reviewsCount | number }}</div>
             <tui-svg src="tuiIconStar" class="icon text-blue-400 ml-6"></tui-svg>
-            <div class="text-bold">4.8</div>
+            <div class="text-bold">{{flat.reviewsRating}}</div>
           </div>
           <div class="text-right">
             <div>

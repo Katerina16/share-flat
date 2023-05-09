@@ -7,7 +7,7 @@ import crypto from "crypto";
 import fs from "fs";
 import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
 import * as dateFns from 'date-fns'
-import { LessThanOrEqual } from "typeorm";
+import { MoreThanOrEqual } from "typeorm";
 import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.entity";
 
 
@@ -16,10 +16,10 @@ export class FlatService {
 
   async find({ shared, cityId, from, to, guests }): Promise<FlatEntity[]> {
     const flats= await FlatEntity.find({
-      relations: ['city', 'propertyValues', 'propertyValues.property', 'user', 'freeDates', 'reservations', 'sharedReservations'],
+      relations: ['city', 'propertyValues', 'propertyValues.property', 'user', 'freeDates', 'reservations', 'sharedReservations', 'reviews'],
       where: {
         city: { id: cityId },
-        guests: LessThanOrEqual(guests),
+        guests: MoreThanOrEqual(guests),
         shared,
       }
     });
@@ -45,8 +45,17 @@ export class FlatService {
         }
       }
 
+      flat.reviewsCount = flat.reviews.length;
+
+      flat.reviewsRating = flat.reviewsCount > 0
+        ? (flat.reviews.reduce((acc, curr) => acc + curr.rating, 0)) / flat.reviewsCount
+        : 0;
+
+      flat.reviewsRating = Math.round(flat.reviewsRating * 100) / 100;
+
       delete flat.reservations;
       delete flat.sharedReservations;
+      delete flat.reviews;
 
       return true;
 

@@ -90,4 +90,8 @@ export class FlatEntity extends BaseEntity {
   @OneToMany(() => ReservationEntity, (reservation) => reservation.sharedFlat)
   sharedReservations: ReservationEntity[];
 
+  reviewsCount: number;
+
+  reviewsRating: number;
+
 }
