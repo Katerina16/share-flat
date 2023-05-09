@@ -1,7 +1,7 @@
-import {Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
-import {ChatEntity} from "@sf/interfaces/modules/flat/entities/chat.entity";
 import { UserEntity } from "@sf/interfaces/modules/user/entities/user.entity";
+import { MessageEntity } from "@sf/interfaces/modules/flat/entities/message.entity";
 
 @Entity('reservation')
 export class ReservationEntity extends BaseEntity {
@@ -40,11 +40,7 @@ export class ReservationEntity extends BaseEntity {
   })
   user: UserEntity;
 
-  @ManyToOne(() => ChatEntity, (chat) => chat.messages)
-  @JoinColumn({
-    name: 'chat_id',
-    referencedColumnName: 'id'
-  })
-  chat: ChatEntity;
+  @OneToMany(() => MessageEntity, (message) => message.reservation)
+  messages: MessageEntity[];
 
 }

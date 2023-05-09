@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CityEntity } from "@sf/interfaces/modules/city/entities/city.entity";
-import { ChatEntity } from "@sf/interfaces/modules/flat/entities/chat.entity";
 import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
 import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.entity";
 import { MessageEntity } from "@sf/interfaces/modules/flat/entities/message.entity";
@@ -46,7 +45,6 @@ import { UserModule } from './user/user.module';
           PropertyValueEntity,
           PropertyEntity,
           FreeDateEntity,
-          ChatEntity,
           MessageEntity,
           ReservationEntity,
           ReviewEntity,
