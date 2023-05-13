@@ -11,6 +11,21 @@ export class ReservationService {
   constructor() {
   }
 
+  async find(userId: number, my: boolean): Promise<ReservationEntity[]> {
+
+    const reservations = await ReservationEntity.find({
+      relations: ['messages', 'user', 'flat', 'flat.user']
+    });
+
+    return reservations.filter(reservation => {
+      if (my) {
+        return reservation.user.id === userId;
+      } else  {
+        return reservation.flat.user.id === userId;
+      }
+    });
+  }
+
   async reservation(userId: number, reservation: CreateReservationDto): Promise<void> {
 
     const flatData = reservation.flat || reservation.sharedFlat;

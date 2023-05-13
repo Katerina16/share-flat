@@ -19,7 +19,6 @@ export class ReviewService {
   async create(userId: number, review: CreateReviewDto): Promise<void> {
     review.user = { id: userId } as UserEntity;
 
-    console.log(11111)
     await ReviewEntity.insert(review);
   }
 }
