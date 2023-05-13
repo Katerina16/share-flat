@@ -1,36 +1,58 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { CreateFlatDto } from "@sf/interfaces/modules/flat/dto/create.flat.dto";
-import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
-import { PropertyValueEntity } from "@sf/interfaces/modules/flat/entities/property.value.entity";
-import { UserEntity } from "@sf/interfaces/modules/user/entities/user.entity";
-import crypto from "crypto";
-import fs from "fs";
-import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
-import * as dateFns from 'date-fns'
-import { MoreThanOrEqual } from "typeorm";
-import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.entity";
-
+import { CreateFlatDto } from '@sf/interfaces/modules/flat/dto/create.flat.dto';
+import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
+import { PropertyValueEntity } from '@sf/interfaces/modules/flat/entities/property.value.entity';
+import { UserEntity } from '@sf/interfaces/modules/user/entities/user.entity';
+import crypto from 'crypto';
+import fs from 'fs';
+import { PropertyEntity } from '@sf/interfaces/modules/flat/entities/property.entity';
+import * as dateFns from 'date-fns';
+import { MoreThanOrEqual } from 'typeorm';
+import { FreeDateEntity } from '@sf/interfaces/modules/flat/entities/free.date.entity';
 
 @Injectable()
 export class FlatService {
-
-  async find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, priceFrom, priceTo, rooms, properties }): Promise<{ count: number, flats: FlatEntity[] }> {
-
+  async find({
+    limit,
+    offset,
+    shared,
+    cityId,
+    from,
+    to,
+    guests,
+    squareFrom,
+    squareTo,
+    priceFrom,
+    priceTo,
+    rooms,
+    properties,
+  }): Promise<{ count: number; flats: FlatEntity[] }> {
     const flats = await FlatEntity.find({
-      relations: ['city', 'propertyValues', 'propertyValues.property', 'user', 'freeDates', 'reservations', 'sharedReservations', 'reviews'],
+      relations: [
+        'city',
+        'propertyValues',
+        'propertyValues.property',
+        'user',
+        'freeDates',
+        'reservations',
+        'sharedReservations',
+        'reviews',
+      ],
       where: {
         city: { id: cityId },
         guests: MoreThanOrEqual(guests),
         shared,
-      }
+      },
     });
 
-    const filteredFlats = flats.filter(flat => {
+    const filteredFlats = flats.filter((flat) => {
       for (const reservation of flat.reservations) {
         if (
-          !(dateFns.isBefore(new Date(to), new Date(reservation.from))
-            || dateFns.isAfter(new Date(from), new Date(reservation.to))
-          )) {
+          !(
+            dateFns.isBefore(new Date(to), new Date(reservation.from)) ||
+            dateFns.isAfter(new Date(from), new Date(reservation.to))
+          )
+        ) {
           return false;
         }
       }
@@ -38,9 +60,11 @@ export class FlatService {
       if (shared) {
         for (const reservation of flat.sharedReservations) {
           if (
-            !(dateFns.isBefore(new Date(to), new Date(reservation.from))
-              || dateFns.isAfter(new Date(from), new Date(reservation.to))
-            )) {
+            !(
+              dateFns.isBefore(new Date(to), new Date(reservation.from)) ||
+              dateFns.isAfter(new Date(from), new Date(reservation.to))
+            )
+          ) {
             return false;
           }
         }
@@ -65,16 +89,22 @@ export class FlatService {
       }
 
       if (properties) {
-        if (!(properties.every(property => flat.propertyValues.map(propertyValue => propertyValue.property.id).includes(property)))) {
+        if (
+          !properties.every((property) =>
+            flat.propertyValues
+              .filter((v) => v.value)
+              .map((propertyValue) => propertyValue.property.id)
+              .includes(property)
+          )
+        ) {
           return false;
         }
       }
 
       flat.reviewsCount = flat.reviews.length;
 
-      flat.reviewsRating = flat.reviewsCount > 0
-        ? (flat.reviews.reduce((acc, curr) => acc + curr.rating, 0)) / flat.reviewsCount
-        : 0;
+      flat.reviewsRating =
+        flat.reviewsCount > 0 ? flat.reviews.reduce((acc, curr) => acc + curr.rating, 0) / flat.reviewsCount : 0;
 
       flat.reviewsRating = Math.round(flat.reviewsRating * 100) / 100;
 
@@ -84,24 +114,22 @@ export class FlatService {
       delete flat.propertyValues;
 
       return true;
-
     });
 
     return {
       count: filteredFlats.length,
       flats: filteredFlats.slice(offset, limit + offset),
-    }
+    };
   }
 
   async findById(id): Promise<FlatEntity> {
     return FlatEntity.findOne({
       where: { id },
-      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates']
+      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates'],
     });
   }
 
   async create(userId: number, flatData: CreateFlatDto): Promise<FlatEntity> {
-
     flatData.user = await UserEntity.findOne({ where: { id: userId } });
 
     const flat = await FlatEntity.create<FlatEntity>(flatData as FlatEntity).save();
@@ -119,11 +147,9 @@ export class FlatService {
     await FreeDateEntity.insert(flat.freeDates);
 
     return flat;
-
   }
 
   async update(userId: number, flatId: number, flatData: CreateFlatDto): Promise<FlatEntity> {
-
     const flat = await this.findById(flatId);
 
     if (userId !== flat.user.id) {
@@ -170,22 +196,18 @@ export class FlatService {
     flat.photos.push(fileName);
     const photos = flat.photos;
 
-    await FlatEntity.update({ id: flatId }, { photos })
-    await fs.writeFileSync(`photos/flat/${flatId}/${fileName}`, file.buffer)
-
+    await FlatEntity.update({ id: flatId }, { photos });
+    await fs.writeFileSync(`photos/flat/${flatId}/${fileName}`, file.buffer);
   }
 
-
   async deletePhoto(userId: number, flatId: number, fileName: string) {
-
     const flat = await this.findById(flatId);
 
-    flat.photos = flat.photos.filter(photo => photo !== fileName);
+    flat.photos = flat.photos.filter((photo) => photo !== fileName);
 
     await this.update(userId, flatId, flat);
 
-    await fs.unlinkSync(`photos/flat/${flatId}/${fileName}`)
-
+    await fs.unlinkSync(`photos/flat/${flatId}/${fileName}`);
   }
 
   async findProperties(): Promise<PropertyEntity[]> {
