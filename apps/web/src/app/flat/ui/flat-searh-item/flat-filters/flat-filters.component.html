@@ -1,0 +1,70 @@
+<form class="p-3">
+  <div class="flex items-center">
+    <div class="flex flex-1 items-center">
+      <tui-select [(ngModel)]="filters.city" name="city" class="w-full">
+        Город
+        <input tuiTextfield placeholder="Выберите город" />
+        <tui-data-list-wrapper *tuiDataList [items]="cities"></tui-data-list-wrapper>
+      </tui-select>
+
+      <tui-input-date-range [(ngModel)]="filters.dates" name="dates" class="ml-2 w-full">
+        Даты
+        <input tuiTextfield placeholder="Заезд - Отъезд" />
+      </tui-input-date-range>
+
+      <tui-input-count [(ngModel)]="filters.guests" [min]="1" name="guests" class="ml-2">
+        Гости
+        <input tuiTextfield placeholder="Кол-во гостей" />
+      </tui-input-count>
+
+      <div class="bg-white border rounded-xl px-2 py-4 h-14 ml-2">
+        <tui-checkbox-labeled [(ngModel)]="filters.shared" size="l" name="shared" class="ml-2">
+          Обмен
+        </tui-checkbox-labeled>
+      </div>
+
+      <tui-hosted-dropdown [content]="dropdown" [(open)]="extraFiltersOpen" class="ml-2">
+        <button tuiButton type="button" appearance="outline" class="whitespace-nowrap">Доп. фильтры</button>
+      </tui-hosted-dropdown>
+      <ng-template #dropdown>
+        <div class="p-4" style="width: 500px">
+          <div class="text-lg font-bold">Цена за сутки</div>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <tui-input-number [(ngModel)]="filters.priceFrom" name="priceFrom">
+              От
+              <input tuiTextfield />
+            </tui-input-number>
+            <tui-input-number [(ngModel)]="filters.priceTo" name="priceTo">
+              До
+              <input tuiTextfield />
+            </tui-input-number>
+          </div>
+          <div class="text-lg font-bold mt-4">Площадь, м²</div>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <tui-input-number [(ngModel)]="filters.squareFrom" name="squareFrom">
+              От
+              <input tuiTextfield />
+            </tui-input-number>
+            <tui-input-number [(ngModel)]="filters.squareTo" name="squareTo">
+              До
+              <input tuiTextfield />
+            </tui-input-number>
+          </div>
+          <div class="text-lg font-bold mt-4">Основные удобства</div>
+          <div class="grid grid-cols-2 gap-2 mt-4">
+            <tui-checkbox-labeled
+              *ngFor="let prop of filters.properties"
+              [(ngModel)]="prop.value"
+              size="l"
+              name="prop{{ prop.property.id }}"
+            >
+              {{ prop.property.name }}
+            </tui-checkbox-labeled>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+
+    <button tuiButton type="button" class="ml-2" (click)="search()">Найти</button>
+  </div>
+</form>

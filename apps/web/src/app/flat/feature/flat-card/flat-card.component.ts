@@ -7,9 +7,11 @@ import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
 import { ReviewEntity } from '@sf/interfaces/modules/flat/entities/review.entity';
 import { TuiButtonModule, TuiSvgModule } from '@taiga-ui/core';
 import { TuiCarouselModule, TuiIslandModule, TuiPaginationModule } from '@taiga-ui/kit';
-import { Observable, combineLatest, map, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, switchMap } from 'rxjs';
 import { selectCurrentUser } from '../../../core/store/auth/selectors';
 import { AppState } from '../../../core/store/reducers';
+import { TuiFilterPipeModule, TuiMatcher } from '@taiga-ui/cdk';
+import { PropertyValueEntity } from '@sf/interfaces/modules/flat/entities/property.value.entity';
 
 @Component({
   selector: 'sf-flat-card',
@@ -21,13 +23,13 @@ import { AppState } from '../../../core/store/reducers';
     TuiSvgModule,
     TuiIslandModule,
     TuiButtonModule,
-    RouterModule
+    RouterModule,
+    TuiFilterPipeModule
   ],
   templateUrl: './flat-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlatCardComponent implements OnInit {
-
   imageIndex = 0;
 
   flat$: Observable<FlatEntity>;
@@ -37,16 +39,12 @@ export class FlatCardComponent implements OnInit {
   reviewsCount$: Observable<number>;
   reviewsRating$: Observable<number>;
 
-  constructor(
-    private http: HttpClient,
-    private route: ActivatedRoute,
-    private store: Store<AppState>
-  ) { }
+  propFilter: TuiMatcher<PropertyValueEntity> = (prop: PropertyValueEntity) => prop.value;
+
+  constructor(private http: HttpClient, private route: ActivatedRoute, private store: Store<AppState>) {}
 
   ngOnInit(): void {
-    this.flat$ = this.route.params.pipe(
-      switchMap(params => this.http.get<FlatEntity>(`/flat/${params['id']}`))
-    );
+    this.flat$ = this.route.params.pipe(switchMap(params => this.http.get<FlatEntity>(`/flat/${params['id']}`)));
 
     this.isOwnFlat$ = combineLatest([this.flat$, this.store.select(selectCurrentUser)]).pipe(
       map(([flat, user]) => flat.user.id === user?.id)

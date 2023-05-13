@@ -3,14 +3,14 @@
 
   <div *ngIf="form" class="grid grid-cols-1 md:grid-cols-2">
     <form [formGroup]="form">
-      <tui-checkbox-labeled formControlName="shared" size="l" class="mt-4"> Объявление на обмен </tui-checkbox-labeled>
+      <tui-checkbox-labeled formControlName="shared" size="l" class="mt-4"> Объявление на обмен</tui-checkbox-labeled>
       <tui-input formControlName="name" class="mt-4">
         Название
         <input tuiTextfield type="text" />
       </tui-input>
       <tui-error formControlName="name" [error]="[] | tuiFieldError | async"></tui-error>
 
-      <tui-text-area formControlName="description" [expandable]="true" class="mt-4"> Описание </tui-text-area>
+      <tui-text-area formControlName="description" [expandable]="true" class="mt-4"> Описание</tui-text-area>
       <tui-error formControlName="description" [error]="[] | tuiFieldError | async"></tui-error>
 
       <tui-select formControlName="city" class="w-full mt-4">
@@ -32,8 +32,7 @@
           <input tuiTextfield name="latitude" />
         </tui-input-number>
         <tui-input-number formControlName="longitude" [precision]="6">
-          Долгота
-          <input tuiTextfield name="longitude" />
+          Долгота<input tuiTextfield name="longitude" />
         </tui-input-number>
       </div>
 
@@ -109,7 +108,6 @@
         accept="image/*"
         [formControl]="filesControl"
         [multiple]="true"
-        name="photos"
         link="Выберите файл"
         label="или перетащите в эту зону"
       ></tui-input-files>
