@@ -7,7 +7,7 @@ import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
 import { ReviewEntity } from '@sf/interfaces/modules/flat/entities/review.entity';
 import { TuiButtonModule, TuiSvgModule } from '@taiga-ui/core';
 import { TuiCarouselModule, TuiIslandModule, TuiPaginationModule } from '@taiga-ui/kit';
-import { combineLatest, map, Observable, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, shareReplay, switchMap } from 'rxjs';
 import { selectCurrentUser } from '../../../core/store/auth/selectors';
 import { AppState } from '../../../core/store/reducers';
 import { TuiFilterPipeModule, TuiMatcher } from '@taiga-ui/cdk';
@@ -44,19 +44,18 @@ export class FlatCardComponent implements OnInit {
   constructor(private http: HttpClient, private route: ActivatedRoute, private store: Store<AppState>) {}
 
   ngOnInit(): void {
-    this.flat$ = this.route.params.pipe(switchMap(params => this.http.get<FlatEntity>(`/flat/${params['id']}`)));
+    this.flat$ = this.route.params.pipe(
+      switchMap(params => this.http.get<FlatEntity>(`/flat/${params['id']}`)),
+      shareReplay(1)
+    );
 
     this.isOwnFlat$ = combineLatest([this.flat$, this.store.select(selectCurrentUser)]).pipe(
       map(([flat, user]) => flat.user.id === user?.id)
     );
 
     this.reviews$ = this.route.params.pipe(
-      // switchMap(params => this.http.get<ReviewEntity[]>(`/flat/${params['id']}/reviews`)),
-      map(() => [
-        <ReviewEntity>{ text: '', rating: 5 },
-        <ReviewEntity>{ text: '', rating: 2 },
-        <ReviewEntity>{ text: '', rating: 4 }
-      ])
+      switchMap(params => this.http.get<ReviewEntity[]>(`/review/${params['id']}`)),
+      shareReplay(1)
     );
 
     this.reviewsCount$ = this.reviews$.pipe(map(reviews => reviews.length));
