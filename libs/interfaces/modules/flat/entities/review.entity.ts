@@ -7,6 +7,11 @@ export class ReviewEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column('timestamp without time zone', {
+    default: () => '(now() at time zone \'Europe/Moscow\')'
+  })
+  created: Date;
+
   @Column('int', {
     nullable: false,
   })
