@@ -14,21 +14,30 @@ export class ReservationService {
   async find(userId: number, my: boolean): Promise<ReservationEntity[]> {
 
     const reservations = await ReservationEntity.find({
-      relations: ['messages', 'user', 'flat', 'flat.user']
+      relations: ['user', 'flat', 'flat.user']
     });
 
     return reservations.filter(reservation => {
       if (my) {
         return reservation.user.id === userId;
-      } else  {
+      } else {
         return reservation.flat.user.id === userId;
       }
     });
   }
 
-  async reservation(userId: number, reservation: CreateReservationDto): Promise<void> {
+  async findById(id: number): Promise<ReservationEntity> {
 
-    const flatData = reservation.flat || reservation.sharedFlat;
+    return ReservationEntity.findOne({
+      where: { id },
+      relations: ['flat', 'flat.user', 'sharedFlat', 'sharedFlat.user']
+    });
+
+  }
+
+  async reservation(userId: number, reservationData: CreateReservationDto): Promise<ReservationEntity> {
+
+    const flatData = reservationData.flat || reservationData.sharedFlat;
 
     const flat = await FlatEntity.findOne({
       where: { id: flatData.id },
@@ -39,17 +48,18 @@ export class ReservationService {
       throw new ForbiddenException('Нельзя забронировать вашу квартиру');
     }
 
-    reservation.user = { id: userId } as UserEntity;
+    reservationData.user = { id: userId } as UserEntity;
 
     for (const flatReservation of flat.reservations) {
-      if (!(dateFns.isBefore(new Date(reservation.to), new Date(flatReservation.from))
-        || dateFns.isAfter(new Date(reservation.from), new Date(flatReservation.to))
+      if (!(dateFns.isBefore(new Date(reservationData.to), new Date(flatReservation.from))
+        || dateFns.isAfter(new Date(reservationData.from), new Date(flatReservation.to))
       )) {
         throw new BadRequestException('Квартира уже забронирована на эти даты');
       }
     }
 
-    await ReservationEntity.insert(reservation);
+    const reservationInsert = await ReservationEntity.insert(reservationData);
 
+    return ReservationEntity.findOne({ where: reservationInsert.identifiers[0].id })
   }
 }

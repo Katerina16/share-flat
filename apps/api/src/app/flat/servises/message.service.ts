@@ -12,6 +12,7 @@ export class MessageService {
   async find(reservationId: number): Promise<MessageEntity[]> {
     return MessageEntity.find({
       where: { reservation: { id: reservationId } },
+      relations: ['user'],
     });
   }
 
