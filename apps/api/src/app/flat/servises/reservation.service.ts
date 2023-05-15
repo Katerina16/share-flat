@@ -14,7 +14,7 @@ export class ReservationService {
   async find(userId: number, my: boolean): Promise<ReservationEntity[]> {
 
     const reservations = await ReservationEntity.find({
-      relations: ['user', 'flat', 'flat.user']
+      relations: ['user', 'flat', 'flat.user', 'flat.city']
     });
 
     return reservations.filter(reservation => {
@@ -26,13 +26,16 @@ export class ReservationService {
     });
   }
 
-  async findById(id: number): Promise<ReservationEntity> {
+  async findById(id: number, userId: number): Promise<ReservationEntity> {
 
-    return ReservationEntity.findOne({
+    const reservation =  await ReservationEntity.findOne({
       where: { id },
-      relations: ['flat', 'flat.user', 'sharedFlat', 'sharedFlat.user']
+      relations: ['flat', 'flat.user', 'flat.reviews', 'flat.reviews.user', 'sharedFlat', 'sharedFlat.user']
     });
 
+    reservation.flat.reviews = reservation.flat.reviews.filter(review => review.user.id === userId)
+
+    return reservation;
   }
 
   async reservation(userId: number, reservationData: CreateReservationDto): Promise<ReservationEntity> {
