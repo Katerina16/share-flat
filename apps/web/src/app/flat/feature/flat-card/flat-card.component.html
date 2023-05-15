@@ -77,10 +77,41 @@
           <div *ngFor="let prop of flat.propertyValues | tuiFilter : propFilter">{{ prop.property.name }}</div>
         </div>
       </tui-island>
+
+      <ng-container *ngIf="reviews$ | async as reviews">
+        <ng-container *ngIf="reviews.length">
+          <tui-island class="mt-5">
+            <div class="flex justify-between">
+              <h3 class="tui-island__title flex items-center">
+                <tui-svg src="tuiIconThumbsUp" class="icon text-blue-400"></tui-svg>
+                Отзывы
+              </h3>
+              <div class="flex items-center">
+                <tui-svg src="tuiIconStar" class="icon text-blue-400"></tui-svg>
+                <div class="font-bold">{{ reviewsRating$ | async | number : '.0-1' }}</div>
+                <div class="ml-4">Отзывов: {{ reviews.length | number }}</div>
+              </div>
+            </div>
+            <div *ngFor="let review of reviews" class="p-4 border-b last:border-0">
+              <div class="flex justify-between">
+                <div>
+                  <div class="font-bold">{{ review.user.firstName }}</div>
+                  <div class="text-gray-500">{{ review.user.created | date : 'dd.MM.yyyy HH:mm' }}</div>
+                </div>
+                <div class="flex items-center">
+                  <tui-svg src="tuiIconStarLarge" class="icon text-blue-400"></tui-svg>
+                  <span class="ml-2 text-xl font-bold">{{ review.rating }}</span>
+                </div>
+              </div>
+              <div class="mt-3">{{ review.text }}</div>
+            </div>
+          </tui-island>
+        </ng-container>
+      </ng-container>
     </div>
     <div>
       <div class="sticky top-24">
-        <tui-island class="h-60 bg-slate-400"></tui-island>
+        <tui-island class="h-60"> </tui-island>
       </div>
     </div>
   </div>
