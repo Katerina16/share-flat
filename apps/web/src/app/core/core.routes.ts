@@ -13,6 +13,10 @@ export const CORE_ROUTES: Route[] = [
       {
         path: 'flat',
         loadChildren: () => import('../flat/flat.routes').then(m => m.FLAT_ROUTES)
+      },
+      {
+        path: 'reservation',
+        loadChildren: () => import('../reservation/reservation.routes').then(m => m.RESERVATION_ROUTES)
       }
     ]
   }

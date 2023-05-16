@@ -1,0 +1,50 @@
+<h1 class="tui-text_h1">Мои бронирования</h1>
+
+<div class="max-w-screen-lg mx-auto mt-6">
+  <a
+    *ngFor="let reservation of reservations$ | async"
+    [routerLink]="['/reservation/card', reservation.id]"
+    target="_blank"
+    draggable="false"
+  >
+    <tui-island class="mt-5 p-0 hover:scale-105 transition-all hover:shadow-md">
+      <div class="grid grid-cols-5">
+        <tui-carousel [draggable]="true" [(index)]="imageIndexes[reservation.id]" class="-mx-5 col-span-2">
+          <ng-container *ngFor="let photo of reservation.flat.photos; let i = index">
+            <img
+              *tuiItem
+              draggable="false"
+              src="/api/photos/flat/{{ reservation.flat.id }}/{{ photo }}"
+              class="h-full object-cover rounded-xl aspect-video"
+              [class.item_active]="i === imageIndexes[reservation.id] + 1"
+            />
+          </ng-container>
+        </tui-carousel>
+        <div class="col-span-2 flex flex-col justify-between p-4">
+          <div class="font-semibold">{{ reservation.flat.name }}</div>
+          <div class="flex gap-x-6">
+            <div>
+              <div class="text-gray-500">Площадь</div>
+              <div>{{ reservation.flat.square | number }} м²</div>
+            </div>
+            <div>
+              <div class="text-gray-500">Комнат</div>
+              <div>{{ reservation.flat.rooms | number }}</div>
+            </div>
+          </div>
+          <div class="text-gray-500">{{ reservation.flat.city.name }}, {{ reservation.flat.address }}</div>
+        </div>
+        <div class="col-span-1 p-4 border-l h-full flex flex-col justify-between">
+          <div class="flex items-center"></div>
+          <div class="text-right">
+            <div>
+              <span class="font-bold text-lg">{{ reservation.flat.price | number }} ₽</span>
+              <span class="ml-3 text-gray-500">за сутки</span>
+            </div>
+            <div class="text-gray-500">Всего {{ reservationFullPrice(reservation) | number }} ₽</div>
+          </div>
+        </div>
+      </div>
+    </tui-island>
+  </a>
+</div>

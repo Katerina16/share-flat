@@ -4,7 +4,7 @@ export const FLAT_ROUTES: Route[] = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'list'
+    redirectTo: 'search'
   },
   {
     path: 'add',

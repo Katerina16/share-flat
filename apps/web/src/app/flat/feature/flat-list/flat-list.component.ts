@@ -9,7 +9,7 @@ import { BehaviorSubject, combineLatest, filter, map, Observable, shareReplay, s
 import { City } from '../../models/city.model';
 import { FlatsData } from '../../models/flats-data.model';
 import { SearchParams } from '../../models/search-params.model';
-import { FlatFiltersComponent } from '../../ui/flat-searh-item/flat-filters/flat-filters.component';
+import { FlatFiltersComponent } from '../../ui/flat-filters/flat-filters.component';
 import { FlatSearhItemComponent } from '../../ui/flat-searh-item/flat-searh-item.component';
 import { FlatPropertyInterface } from '../../models/flat-property.model';
 

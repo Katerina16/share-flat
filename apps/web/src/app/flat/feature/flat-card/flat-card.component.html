@@ -92,7 +92,7 @@
                 <div class="ml-4">Отзывов: {{ reviews.length | number }}</div>
               </div>
             </div>
-            <div *ngFor="let review of reviews" class="p-4 border-b last:border-0">
+            <div *ngFor="let review of reviews" class="py-4 border-b last:border-0">
               <div class="flex justify-between">
                 <div>
                   <div class="font-bold">{{ review.user.firstName }}</div>
@@ -109,9 +109,45 @@
         </ng-container>
       </ng-container>
     </div>
-    <div>
+    <div *ngIf="(isOwnFlat$ | async) === false">
       <div class="sticky top-24">
-        <tui-island class="h-60"> </tui-island>
+        <tui-island>
+          <tui-input-date-range [(ngModel)]="reservation.dates" name="dates" class="w-full">
+            Заезд - Отъезд
+            <input tuiTextfield />
+          </tui-input-date-range>
+
+          <tui-checkbox-labeled [(ngModel)]="reservation.shared" size="l" class="mt-4"> Обмен</tui-checkbox-labeled>
+
+          <div *ngIf="reservation.dates && !reservation.shared" class="mt-4">
+            <div class="font-bold text-xl">Итого</div>
+            <div class="flex items-center justify-between">
+              <div>Суток: {{ getReservationDaysCount() }}</div>
+              <div class="text-lg font-bold">{{ getReservationDaysCount() * flat.price | number }}</div>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <button
+              *ngIf="user$ | async; else loginButton"
+              [disabled]="!reservation.dates"
+              tuiButton
+              type="button"
+              class="w-full"
+              (click)="reserve()"
+            >
+              {{ reservation.dates ? 'Забронировать' : 'Выберите даты' }}
+            </button>
+
+            <ng-template #loginButton>
+              <sf-login-button #logBtn>
+                <button tuiButton type="button" icon="tuiIconLogIn" class="w-full" (click)="logBtn.showDialog()">
+                  Войти для бронирования
+                </button>
+              </sf-login-button>
+            </ng-template>
+          </div>
+        </tui-island>
       </div>
     </div>
   </div>

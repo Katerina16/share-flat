@@ -17,10 +17,10 @@ import {
   tuiItemsHandlersProvider,
   TuiSelectModule
 } from '@taiga-ui/kit';
-import { City } from '../../../models/city.model';
-import { FlatPropertyInterface } from '../../../models/flat-property.model';
-import { SearchFilters } from '../../../models/seacrh-filters.model';
-import { SearchParams } from '../../../models/search-params.model';
+import { City } from '../../models/city.model';
+import { FlatPropertyInterface } from '../../models/flat-property.model';
+import { SearchFilters } from '../../models/seacrh-filters.model';
+import { SearchParams } from '../../models/search-params.model';
 import { CityEntity } from '@sf/interfaces/modules/city/entities/city.entity';
 import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
 
