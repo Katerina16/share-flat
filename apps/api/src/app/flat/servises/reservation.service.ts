@@ -4,6 +4,7 @@ import { ReservationEntity } from "@sf/interfaces/modules/flat/entities/reservat
 import { UserEntity } from "@sf/interfaces/modules/user/entities/user.entity";
 import * as dateFns from 'date-fns'
 import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
+import { IsNull, Not } from "typeorm";
 
 
 @Injectable()
@@ -13,27 +14,51 @@ export class ReservationService {
 
   async find(userId: number, my: boolean): Promise<ReservationEntity[]> {
 
+    let where = my
+      ? [
+        {
+          user: { id: userId },
+        },
+        {
+          flat: { user: { id: userId } },
+          sharedFlat: Not(IsNull())
+        }
+      ]
+      : [
+        {
+          flat: { user: { id: userId } },
+        },
+        {
+          flat: { user: { id: userId } },
+          sharedFlat: Not(IsNull())
+        }
+      ];
+
     const reservations = await ReservationEntity.find({
-      relations: ['user', 'flat', 'flat.user', 'flat.city']
+      relations: ['user', 'flat', 'flat.city', 'flat.reviews', 'flat.reviews.user'],
+      where: where
     });
 
-    return reservations.filter(reservation => {
-      if (my) {
-        return reservation.user.id === userId;
-      } else {
-        return reservation.flat.user.id === userId;
-      }
+
+    return reservations.map(reservation => {
+      reservation.flat.reviews.filter(review => review.user.id === userId);
+
+      return reservation;
     });
   }
 
   async findById(id: number, userId: number): Promise<ReservationEntity> {
 
-    const reservation =  await ReservationEntity.findOne({
+    const reservation = await ReservationEntity.findOne({
       where: { id },
-      relations: ['flat', 'flat.user', 'flat.reviews', 'flat.reviews.user', 'sharedFlat', 'sharedFlat.user']
+      relations: ['flat', 'flat.user', 'flat.reviews', 'flat.reviews.user', 'sharedFlat', 'sharedFlat.reviews', 'sharedFlat.reviews.user', 'sharedFlat.user']
     });
 
-    reservation.flat.reviews = reservation.flat.reviews.filter(review => review.user.id === userId)
+    reservation.flat.reviews = reservation.flat.reviews.filter(review => review.user.id === userId);
+
+    if (reservation.sharedFlat) {
+      reservation.sharedFlat.reviews = reservation.sharedFlat.reviews.filter(review => review.user.id === userId);
+    }
 
     return reservation;
   }
