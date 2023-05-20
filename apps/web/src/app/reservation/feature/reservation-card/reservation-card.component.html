@@ -1,1 +1,98 @@
-<p>reservation-card works!</p>
+<div *ngIf="reservation">
+  <h2 class="tui-text_h2">Бронирование №{{ reservation.id }}</h2>
+
+  <div class="grid grid-cols-4 mt-6 gap-2">
+    <div class="col-span-3">
+      <sf-reservation-island [reservation]="reservation"></sf-reservation-island>
+    </div>
+    <div class="col-span-1 flex flex-col flex-1">
+      <tui-island class="h-full">
+        <h3 class="tui-island__title flex items-center">
+          <tui-svg src="tuiIconUser" class="icon text-blue-400"></tui-svg>
+          Собственник
+        </h3>
+
+        <div class="text-lg font-medium">
+          {{ reservation.flat.user.firstName }} {{ reservation.flat.user.lastName }}
+        </div>
+        <div class="text-gray-500">На сайте с {{ reservation.flat.user.created | date : 'dd.MM.yyyy' }}</div>
+
+        <div class="mt-10">
+          <a *ngIf="reservation.flat.user.phone as phone" href="tel:{{ phone }}">
+            <button tuiButton type="button" class="w-full" icon="tuiIconPhone">
+              {{ phone | tuiFormatPhone }}
+            </button>
+          </a>
+        </div>
+      </tui-island>
+    </div>
+
+    <ng-container>
+      <div class="col-span-4 flex justify-center py-3">
+        <tui-svg src="tuiIconRefreshCcwLarge" class="refresh-icon text-blue-400"></tui-svg>
+      </div>
+      <div class="col-span-3">
+        <sf-reservation-island [reservation]="reservation" flatField="sharedFlat"></sf-reservation-island>
+      </div>
+      <div class="col-span-1 flex flex-col flex-1">
+        <tui-island class="h-full">
+          <h3 class="tui-island__title flex items-center">
+            <tui-svg src="tuiIconUser" class="icon text-blue-400"></tui-svg>
+            Собственник
+          </h3>
+
+          <div class="text-lg font-medium">
+            {{ reservation.sharedFlat.user.firstName }} {{ reservation.sharedFlat.user.lastName }}
+          </div>
+          <div class="text-gray-500">На сайте с {{ reservation.sharedFlat.user.created | date : 'dd.MM.yyyy' }}</div>
+
+          <div class="mt-10">
+            <a *ngIf="reservation.sharedFlat.user.phone as phone" href="tel:{{ phone }}">
+              <button tuiButton type="button" class="w-full" icon="tuiIconPhone">
+                {{ phone | tuiFormatPhone }}
+              </button>
+            </a>
+          </div>
+        </tui-island>
+      </div>
+    </ng-container>
+
+    <div *ngIf="currentUser$ | async as currentUser" class="col-span-3 mt-4 mb-10">
+      <tui-island class="h-full">
+        <h3 class="tui-island__title flex items-center">
+          <tui-svg src="tuiIconMessageSquare" class="icon text-blue-400"></tui-svg>
+          Сообщения
+        </h3>
+
+        <div class="overflow-auto flex flex-col" style="height: 350px">
+          <div
+            *ngFor="let message of messages | tuiMapper : mapper"
+            class="bg-blue-100 rounded-md p-3 mt-4"
+            [ngClass]="message.user.id === currentUser.id ? 'bg-blue-100 self-end' : 'bg-gray-100 self-start'"
+          >
+            <div>
+              <div class="font-bold">{{ message.user.firstName }} {{ message.user.lastName }}</div>
+              <div class="text-gray-500">{{ message.date | date : 'dd.MM.yyyy HH:mm' }}</div>
+            </div>
+            <div class="mt-3">{{ message.text }}</div>
+          </div>
+        </div>
+
+        <div class="flex items-end mt-4 gap-2">
+          <tui-text-area [formControl]="messageControl" class="flex-1" style="min-height: 3.5rem" [expandable]="true">
+            Введите сообщение
+          </tui-text-area>
+          <button
+            tuiButton
+            type="button"
+            icon="tuiIconSend"
+            [disabled]="messageControl.invalid"
+            (click)="sendMessage()"
+          >
+            Отправить
+          </button>
+        </div>
+      </tui-island>
+    </div>
+  </div>
+</div>

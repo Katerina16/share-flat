@@ -9,14 +9,26 @@ import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
 import { PropertyEntity } from '@sf/interfaces/modules/flat/entities/property.entity';
 import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
 import { TuiButtonModule, TuiDataListModule, TuiErrorModule } from '@taiga-ui/core';
-import { TuiCheckboxLabeledModule, TuiDataListWrapperModule, TuiFieldErrorPipeModule, TuiInputCountModule, TuiInputDateModule, TuiInputFilesModule, TuiInputModule, TuiInputNumberModule, TuiInputPhoneModule, TuiSelectModule, TuiTextAreaModule, tuiItemsHandlersProvider } from '@taiga-ui/kit';
+import {
+  TuiCheckboxLabeledModule,
+  TuiDataListWrapperModule,
+  TuiFieldErrorPipeModule,
+  TuiInputCountModule,
+  TuiInputDateModule,
+  TuiInputFilesModule,
+  TuiInputModule,
+  TuiInputNumberModule,
+  TuiInputPhoneModule,
+  tuiItemsHandlersProvider,
+  TuiSelectModule,
+  TuiTextAreaModule
+} from '@taiga-ui/kit';
 import { concatMap, delay, from, mergeMap, of, tap, toArray } from 'rxjs';
 import { selectCurrentUser } from '../../../core/store/auth/selectors';
 import { AppState } from '../../../core/store/reducers';
 import { formValidatorProvider } from '../../../shared/form-validators-provider';
 import { LoginButtonComponent } from '../../../shared/login-button/login-button.component';
 import { ExampleNativeDateTransformerDirective } from '../../../shared/to-native-date.directive';
-
 
 @Component({
   selector: 'sf-flat-add',
@@ -46,7 +58,6 @@ import { ExampleNativeDateTransformerDirective } from '../../../shared/to-native
   ]
 })
 export class FlatAddComponent implements OnInit {
-
   form: FormGroup;
 
   filesControl = new FormControl();
@@ -58,10 +69,10 @@ export class FlatAddComponent implements OnInit {
     private readonly http: HttpClient,
     private readonly router: Router,
     private readonly cdRef: ChangeDetectorRef
-  ) { }
+  ) {}
 
   get propertiesControls(): FormGroup[] {
-    return ((this.form.get('propertyValues') as FormArray)?.controls) as FormGroup[];
+    return (this.form.get('propertyValues') as FormArray)?.controls as FormGroup[];
   }
 
   ngOnInit(): void {
@@ -84,23 +95,26 @@ export class FlatAddComponent implements OnInit {
     this.http.get<PropertyEntity[]>('/flat/properties').subscribe((properties) => {
       this.form.addControl(
         'propertyValues',
-        new FormArray(properties.map(p => new FormGroup({
-          value: new FormControl(false),
-          property: new FormGroup({
-            id: new FormControl(p.id),
-            name: new FormControl(p.name)
-          })
-        }))));
+        new FormArray(
+          properties.map(
+            p =>
+              new FormGroup({
+                value: new FormControl(false),
+                property: new FormGroup({
+                  id: new FormControl(p.id),
+                  name: new FormControl(p.name)
+                })
+              })
+          )
+        )
+      );
     });
 
     this.cdRef.detectChanges();
-
   }
 
   removeFile({ name }: File): void {
-    this.filesControl.setValue(
-      this.filesControl.value?.filter((current: File) => current.name !== name) ?? []
-    );
+    this.filesControl.setValue(this.filesControl.value?.filter((current: File) => current.name !== name) ?? []);
   }
 
   save(): void {
@@ -110,12 +124,13 @@ export class FlatAddComponent implements OnInit {
     }
 
     let flatId: number;
-    this.http.post<FlatEntity>('/flat', this.form.value)
+    this.http
+      .post<FlatEntity>('/flat', this.form.value)
       .pipe(
-        tap(flat => flatId = flat.id),
-        mergeMap(() => from((this.filesControl.value || []) as File[]).pipe(
-          concatMap(item => of(item).pipe(delay(10)))
-        )),
+        tap(flat => (flatId = flat.id)),
+        mergeMap(() =>
+          from((this.filesControl.value || []) as File[]).pipe(concatMap(item => of(item).pipe(delay(10))))
+        ),
         mergeMap((file) => {
           const formData = new FormData();
           formData.append('file', file, file.name);
@@ -123,7 +138,6 @@ export class FlatAddComponent implements OnInit {
         }),
         toArray()
       )
-      .subscribe(flatId => this.router.navigate([`/flat/card/${flatId}`]));
+      .subscribe(() => this.router.navigate([`/flat/card/${flatId}`]));
   }
-
 }
