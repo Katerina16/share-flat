@@ -67,8 +67,9 @@
         <div class="overflow-auto flex flex-col" style="height: 350px">
           <div
             *ngFor="let message of messages | tuiMapper : mapper"
-            class="bg-blue-100 rounded-md p-3 mt-4"
             [ngClass]="message.user.id === currentUser.id ? 'bg-blue-100 self-end' : 'bg-gray-100 self-start'"
+            class="bg-blue-100 rounded-md p-3 mt-4"
+            style="max-width: 60%"
           >
             <div>
               <div class="font-bold">{{ message.user.firstName }} {{ message.user.lastName }}</div>
