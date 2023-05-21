@@ -17,9 +17,11 @@ export class MessageService {
   }
 
 
-  async create(userId: number, message: CreateMessageDto): Promise<void> {
+  async create(userId: number, message: CreateMessageDto): Promise<MessageEntity> {
     message.user = { id: userId } as UserEntity;
 
-    await MessageEntity.insert(message);
+    const messageInsert = await MessageEntity.insert(message);
+
+    return MessageEntity.findOne({ where: { id: messageInsert.identifiers[0].id }, relations: ['user'] })
   }
 }
