@@ -65,9 +65,9 @@ export class FlatController {
   @Get('my')
   findMy(
     @Req() req,
-    @Query('from') from: string,
-    @Query('to') to: string,
     @Query('shared', ParseBoolPipe) shared: boolean,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
   ): Promise<FlatEntity[]> {
     const { user: { id } } = req;
     return this.flatService.findMy(id, { shared, from, to });
@@ -105,5 +105,12 @@ export class FlatController {
   deletePhoto(@Req() req, @Param('id', ParseIntPipe) flatId: number, @Param('photo') photo: string): Promise<void> {
     const { user: { id } } = req;
     return this.flatService.deletePhoto(id, flatId, photo);
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete(':id')
+  delete(@Req() req, @Param('id', ParseIntPipe) flatId: number): Promise<void> {
+    const { user: { id } } = req;
+    return this.flatService.delete(id, flatId);
   }
 }

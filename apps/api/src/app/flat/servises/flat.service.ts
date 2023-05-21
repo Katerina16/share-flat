@@ -147,20 +147,24 @@ export class FlatService {
       },
     });
 
-    return flats.filter((flat) => {
-      for (const reservation of flat.reservations) {
-        if (
-          !(
-            dateFns.isBefore(new Date(to), new Date(reservation.from)) ||
-            dateFns.isAfter(new Date(from), new Date(reservation.to))
-          )
-        ) {
-          return false;
+    if (from && to) {
+      return flats.filter((flat) => {
+        for (const reservation of flat.reservations) {
+          if (
+            !(
+              dateFns.isBefore(new Date(to), new Date(reservation.from)) ||
+              dateFns.isAfter(new Date(from), new Date(reservation.to))
+            )
+          ) {
+            return false;
+          }
         }
-      }
 
-      return true;
-    });
+        return true;
+      });
+    }
+
+    return flats;
   }
 
   async findById(id): Promise<FlatEntity> {
@@ -247,5 +251,11 @@ export class FlatService {
 
   async findProperties(): Promise<PropertyEntity[]> {
     return PropertyEntity.find();
+  }
+
+  async delete(userId: number, flatId: number): Promise<void> {
+
+    await FlatEntity.update<FlatEntity>({ id: flatId, user: { id: userId } }, { deleted: true });
+
   }
 }
