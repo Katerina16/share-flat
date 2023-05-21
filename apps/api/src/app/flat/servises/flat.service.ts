@@ -13,20 +13,20 @@ import { FreeDateEntity } from '@sf/interfaces/modules/flat/entities/free.date.e
 @Injectable()
 export class FlatService {
   async find({
-    limit,
-    offset,
-    shared,
-    cityId,
-    from,
-    to,
-    guests,
-    squareFrom,
-    squareTo,
-    priceFrom,
-    priceTo,
-    rooms,
-    properties,
-  }): Promise<{ count: number; flats: FlatEntity[] }> {
+               limit,
+               offset,
+               shared,
+               cityId,
+               from,
+               to,
+               guests,
+               squareFrom,
+               squareTo,
+               priceFrom,
+               priceTo,
+               rooms,
+               properties
+             }): Promise<{ count: number; flats: FlatEntity[] }> {
     const flats = await FlatEntity.find({
       relations: [
         'city',
@@ -36,13 +36,13 @@ export class FlatService {
         'freeDates',
         'reservations',
         'sharedReservations',
-        'reviews',
+        'reviews'
       ],
       where: {
         city: { id: cityId },
         guests: MoreThanOrEqual(guests),
-        shared,
-      },
+        shared
+      }
     });
 
     const filteredFlats = flats.filter((flat) => {
@@ -128,14 +128,14 @@ export class FlatService {
 
     return {
       count: filteredFlats.length,
-      flats: filteredFlats.slice(offset, limit + offset),
+      flats: filteredFlats.slice(offset, limit + offset)
     };
   }
 
   async findById(id): Promise<FlatEntity> {
     return FlatEntity.findOne({
       where: { id },
-      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates'],
+      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates', 'reservations']
     });
   }
 

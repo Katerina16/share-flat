@@ -4,14 +4,17 @@ import { HttpClient } from '@angular/common/http';
 import { ReservationEntity } from '@sf/interfaces/modules/flat/entities/reservation.entity';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ReservationIslandComponent } from '../../ui/reservation-island/reservation-island.component';
-import { TuiIslandModule, TuiTextAreaModule } from '@taiga-ui/kit';
+import { TuiIslandModule, TuiRatingModule, TuiTextAreaModule } from '@taiga-ui/kit';
 import { TuiButtonModule, TuiFormatPhonePipeModule, TuiSvgModule } from '@taiga-ui/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageEntity } from '@sf/interfaces/modules/flat/entities/message.entity';
 import { TuiMapperPipeModule } from '@taiga-ui/cdk';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../core/store/reducers';
 import { selectCurrentUser } from '../../../core/store/auth/selectors';
+import { ReviewEntity } from '@sf/interfaces/modules/flat/entities/review.entity';
+import { User } from '../../../core/store/auth/reducers';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'sf-reservation-card',
@@ -26,7 +29,9 @@ import { selectCurrentUser } from '../../../core/store/auth/selectors';
     RouterLink,
     TuiTextAreaModule,
     ReactiveFormsModule,
-    TuiMapperPipeModule
+    TuiMapperPipeModule,
+    TuiRatingModule,
+    FormsModule
   ],
   templateUrl: './reservation-card.component.html'
 })
@@ -36,7 +41,11 @@ export class ReservationCardComponent implements OnInit {
   messages: MessageEntity[] = [];
   messageControl = new FormControl('', [Validators.required, Validators.minLength(1)]);
 
-  currentUser$ = this.store.select(selectCurrentUser);
+  currentUser: User | null;
+  currentUserReview: ReviewEntity;
+  reservationEnded: boolean;
+
+  reviewForm: FormGroup;
 
   readonly mapper = (messages: MessageEntity[]): MessageEntity[] =>
     messages.sort((a, b) => {
@@ -46,13 +55,37 @@ export class ReservationCardComponent implements OnInit {
   constructor(
     private readonly http: HttpClient,
     private readonly route: ActivatedRoute,
-    private readonly store: Store<AppState>
-  ) {}
+    private readonly store: Store<AppState>,
+    private readonly fb: FormBuilder
+  ) {
+  }
 
   ngOnInit(): void {
+    this.store.select(selectCurrentUser).subscribe((user) => {
+      this.currentUser = user;
+    });
+
     const reservationId = this.route.snapshot.params['id'];
-    this.http.get<ReservationEntity>('/reservation/' + reservationId).subscribe((reservation) => {
+    combineLatest([
+      this.store.select(selectCurrentUser),
+      this.http.get<ReservationEntity>('/reservation/' + reservationId)
+    ]).subscribe(([user, reservation]) => {
       this.reservation = reservation;
+      this.currentUser = user;
+      this.reservationEnded = Date.now() > new Date(reservation.to).getDate();
+
+      if (this.reservation.flat.user.id !== user?.id) {
+        this.currentUserReview = this.reservation.flat.reviews[0];
+      } else if (this.reservation.sharedFlat.user.id !== user?.id) {
+        this.currentUserReview = this.reservation.sharedFlat.reviews[0];
+      }
+
+      if (!this.currentUserReview) {
+        this.reviewForm = this.fb.group({
+          rating: new FormControl(0, [Validators.required, Validators.min(1)]),
+          text: new FormControl('', [Validators.required, Validators.minLength(1)])
+        });
+      }
     });
 
     this.http.get<MessageEntity[]>('/message/' + reservationId).subscribe((messages) => {
@@ -72,6 +105,25 @@ export class ReservationCardComponent implements OnInit {
     this.http.post<MessageEntity>('/message', body).subscribe((message) => {
       this.messages.push(message);
       this.messageControl.reset();
+    });
+  }
+
+  addReview(): void {
+    if (this.reviewForm.invalid) {
+      return;
+    }
+
+    const reviewFlat = this.reservation.flat.user.id === this.currentUser?.id
+      ? this.reservation.sharedFlat
+      : this.reservation.flat;
+
+    const body = {
+      ...this.reviewForm.getRawValue(),
+      flat: { id: reviewFlat.id }
+    };
+
+    this.http.post<ReviewEntity>('/review', body).subscribe((review) => {
+      this.currentUserReview = review;
     });
   }
 }
