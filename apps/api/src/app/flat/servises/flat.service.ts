@@ -40,7 +40,8 @@ export class FlatService {
       where: {
         city: { id: cityId },
         guests: MoreThanOrEqual(guests),
-        shared
+        shared,
+        deleted: false,
       }
     });
 
@@ -141,7 +142,8 @@ export class FlatService {
       ],
       where: {
         shared,
-        user: { id: userId }
+        user: { id: userId },
+        deleted: false
       },
     });
 
