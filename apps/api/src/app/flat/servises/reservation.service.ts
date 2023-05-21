@@ -8,33 +8,32 @@ import { IsNull, Not } from 'typeorm';
 
 @Injectable()
 export class ReservationService {
-  constructor() {
-  }
+  constructor() {}
 
   async find(userId: number, my: boolean): Promise<ReservationEntity[]> {
     const where = my
       ? [
-        {
-          user: { id: userId }
-        },
-        {
-          flat: { user: { id: userId } },
-          sharedFlat: Not(IsNull())
-        }
-      ]
+          {
+            user: { id: userId },
+          },
+          {
+            flat: { user: { id: userId } },
+            sharedFlat: Not(IsNull()),
+          },
+        ]
       : [
-        {
-          flat: { user: { id: userId } }
-        },
-        {
-          flat: { user: { id: userId } },
-          sharedFlat: Not(IsNull())
-        }
-      ];
+          {
+            flat: { user: { id: userId } },
+          },
+          {
+            flat: { user: { id: userId } },
+            sharedFlat: Not(IsNull()),
+          },
+        ];
 
     const reservations = await ReservationEntity.find({
       relations: ['user', 'flat', 'flat.city', 'flat.reviews', 'flat.reviews.user', 'sharedFlat'],
-      where: where
+      where: where,
     });
 
     return reservations.map((reservation) => {
@@ -57,8 +56,8 @@ export class ReservationService {
         'sharedFlat.city',
         'sharedFlat.reviews',
         'sharedFlat.reviews.user',
-        'sharedFlat.user'
-      ]
+        'sharedFlat.user',
+      ],
     });
 
     reservation.flat.reviews = reservation.flat.reviews.filter((review) => review.user.id === userId);
@@ -75,7 +74,7 @@ export class ReservationService {
 
     const flat = await FlatEntity.findOne({
       where: { id: flatData.id },
-      relations: ['reservations', 'user']
+      relations: ['reservations', 'user'],
     });
 
     if (userId === flat.user.id) {
@@ -97,6 +96,6 @@ export class ReservationService {
 
     const reservationInsert = await ReservationEntity.insert(reservationData);
 
-    return ReservationEntity.findOne({ where: reservationInsert.identifiers[0].id });
+    return ReservationEntity.findOne({ where: { id: reservationInsert.identifiers[0].id } });
   }
 }

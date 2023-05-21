@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
 import { ReviewEntity } from '@sf/interfaces/modules/flat/entities/review.entity';
@@ -9,19 +9,22 @@ import { TuiButtonModule, TuiSvgModule } from '@taiga-ui/core';
 import {
   TuiCarouselModule,
   TuiCheckboxLabeledModule,
+  TuiDataListWrapperModule,
   TuiInputDateRangeModule,
   TuiIslandModule,
-  TuiPaginationModule
+  TuiPaginationModule,
+  TuiSelectModule
 } from '@taiga-ui/kit';
-import { combineLatest, map, Observable, shareReplay, switchMap } from 'rxjs';
+import { combineLatest, filter, map, Observable, shareReplay, switchMap, take, tap } from 'rxjs';
 import { selectCurrentUser } from '../../../core/store/auth/selectors';
 import { AppState } from '../../../core/store/reducers';
-import { TuiDayRange, TuiFilterPipeModule, TuiMatcher } from '@taiga-ui/cdk';
+import { TuiDay, TuiDayRange, TuiFilterPipeModule, TuiMatcher } from '@taiga-ui/cdk';
 import { PropertyValueEntity } from '@sf/interfaces/modules/flat/entities/property.value.entity';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
 import { LoginButtonComponent } from '../../../shared/login-button/login-button.component';
 import { ReservationEntity } from '@sf/interfaces/modules/flat/entities/reservation.entity';
+import { addDays, isAfter, isBefore, subDays } from 'date-fns';
 
 @Component({
   selector: 'sf-flat-card',
@@ -39,10 +42,11 @@ import { ReservationEntity } from '@sf/interfaces/modules/flat/entities/reservat
     FormsModule,
     ReactiveFormsModule,
     TuiCheckboxLabeledModule,
-    LoginButtonComponent
+    LoginButtonComponent,
+    TuiSelectModule,
+    TuiDataListWrapperModule
   ],
-  templateUrl: './flat-card.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './flat-card.component.html'
 })
 export class FlatCardComponent implements OnInit {
   imageIndex = 0;
@@ -55,6 +59,10 @@ export class FlatCardComponent implements OnInit {
   reviews$: Observable<ReviewEntity[]>;
   reviewsCount$: Observable<number>;
   reviewsRating$: Observable<number>;
+
+  reservations: ReservationEntity[] = [];
+  ownFlats: FlatEntity[] = [];
+  ownFlatsLoading = false;
 
   reservation: {
     dates: TuiDayRange | null;
@@ -73,7 +81,9 @@ export class FlatCardComponent implements OnInit {
     private route: ActivatedRoute,
     private store: Store<AppState>,
     private router: Router
-  ) {}
+  ) {
+    this.isDateDisabled = this.isDateDisabled.bind(this);
+  }
 
   ngOnInit(): void {
     this.flat$ = this.route.params.pipe(
@@ -81,6 +91,7 @@ export class FlatCardComponent implements OnInit {
         this.flatId = +params['id'];
         return this.http.get<FlatEntity>(`/flat/${this.flatId}`);
       }),
+      tap(flat => (this.reservations = flat.reservations)),
       shareReplay(1)
     );
 
@@ -96,6 +107,20 @@ export class FlatCardComponent implements OnInit {
     this.reviewsRating$ = this.reviews$.pipe(
       map(reviews => reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length)
     );
+
+    this.user$.subscribe(() => this.loadOwnFlats());
+  }
+
+  isDateDisabled(day: TuiDay): boolean {
+    const date = day.toUtcNativeDate();
+    const currentDate = new Date();
+
+    return this.reservations.some((reservation) => {
+      return (
+        isAfter(currentDate, date) ||
+        (isAfter(date, subDays(new Date(reservation.from), 1)) && isBefore(date, addDays(new Date(reservation.to), 1)))
+      );
+    });
   }
 
   getReservationDaysCount(): number {
@@ -118,5 +143,34 @@ export class FlatCardComponent implements OnInit {
     this.http.post<ReservationEntity>('/reservation', data).subscribe((reservation) => {
       this.router.navigate(['/reservation/card', reservation.id]).catch(console.error);
     });
+  }
+
+  loadOwnFlats(): void {
+    if (this.reservation.shared && this.reservation.dates?.from && this.reservation.dates.to) {
+      this.user$
+        .pipe(
+          take(1),
+          tap((user) => {
+            if (!user) {
+              this.ownFlats = [];
+            }
+          }),
+          filter(user => !!user),
+          switchMap(() => {
+            this.ownFlatsLoading = true;
+            const params = {
+              from: this.reservation.dates?.from.toUtcNativeDate().toISOString().substring(0, 10),
+              to: this.reservation.dates?.to.toUtcNativeDate().toISOString().substring(0, 10),
+              shared: true
+            };
+            return this.http.get<FlatEntity[]>('/flat/my', { params: params as Params });
+          })
+        )
+        .subscribe((ownFlats) => {
+          this.ownFlatsLoading = false;
+          this.ownFlats = ownFlats;
+          this.reservation.sharedFlat = this.ownFlats.length === 1 ? this.ownFlats[0] : undefined;
+        });
+    }
   }
 }
