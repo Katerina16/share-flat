@@ -5,7 +5,8 @@ import { CreateReviewDto } from '@sf/interfaces/modules/flat/dto/create.review.d
 
 @Injectable()
 export class ReviewService {
-  constructor() {}
+  constructor() {
+  }
 
   async find(flatId: number): Promise<ReviewEntity[]> {
     return ReviewEntity.find({
@@ -14,9 +15,11 @@ export class ReviewService {
     });
   }
 
-  async create(userId: number, review: CreateReviewDto): Promise<void> {
+  async create(userId: number, review: CreateReviewDto): Promise<ReviewEntity> {
     review.user = { id: userId } as UserEntity;
 
-    await ReviewEntity.insert(review);
+    const reviewInsert = await ReviewEntity.insert(review);
+
+    return ReviewEntity.findOne({ where: { id: reviewInsert.identifiers[0].id } })
   }
 }
