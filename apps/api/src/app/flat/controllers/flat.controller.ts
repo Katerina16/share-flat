@@ -22,7 +22,6 @@ export class FlatController {
   constructor(private readonly flatService: FlatService) {
   }
 
-  @UseGuards(JwtGuard)
   @Get('properties')
   findProperties(): Promise<PropertyEntity[]> {
     return this.flatService.findProperties();
@@ -75,7 +74,6 @@ export class FlatController {
   }
 
 
-  @UseGuards(JwtGuard)
   @Get(':id')
   findById(@Param('id', ParseIntPipe) id: number): Promise<FlatEntity> {
     return this.flatService.findById(id);
