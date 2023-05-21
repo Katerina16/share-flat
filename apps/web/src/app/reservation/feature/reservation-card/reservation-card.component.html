@@ -27,7 +27,7 @@
       </tui-island>
     </div>
 
-    <ng-container>
+    <ng-container *ngIf="reservation.sharedFlat">
       <div class="col-span-4 flex justify-center py-3">
         <tui-svg src="tuiIconRefreshCcwLarge" class="refresh-icon text-blue-400"></tui-svg>
       </div>
