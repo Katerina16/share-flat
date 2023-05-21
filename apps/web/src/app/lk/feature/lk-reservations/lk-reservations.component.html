@@ -1,0 +1,9 @@
+<a
+  *ngFor="let reservation of reservations$ | async"
+  [routerLink]="['/reservation/card', reservation.id]"
+  class="block mt-5"
+  target="_blank"
+  draggable="false"
+>
+  <sf-reservation-island [reservation]="reservation" [showShared]="true"></sf-reservation-island>
+</a>

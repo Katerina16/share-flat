@@ -13,20 +13,20 @@ import { FreeDateEntity } from '@sf/interfaces/modules/flat/entities/free.date.e
 @Injectable()
 export class FlatService {
   async find({
-               limit,
-               offset,
-               shared,
-               cityId,
-               from,
-               to,
-               guests,
-               squareFrom,
-               squareTo,
-               priceFrom,
-               priceTo,
-               rooms,
-               properties,
-             }): Promise<{ count: number; flats: FlatEntity[] }> {
+    limit,
+    offset,
+    shared,
+    cityId,
+    from,
+    to,
+    guests,
+    squareFrom,
+    squareTo,
+    priceFrom,
+    priceTo,
+    rooms,
+    properties,
+  }): Promise<{ count: number; flats: FlatEntity[] }> {
     const flats = await FlatEntity.find({
       relations: [
         'city',
@@ -35,14 +35,14 @@ export class FlatService {
         'user',
         'reservations',
         'sharedReservations',
-        'reviews'
+        'reviews',
       ],
       where: {
         city: { id: cityId },
         guests: MoreThanOrEqual(guests),
         shared,
         deleted: false,
-      }
+      },
     });
 
     const filteredFlats = flats.filter((flat) => {
@@ -128,22 +128,16 @@ export class FlatService {
 
     return {
       count: filteredFlats.length,
-      flats: filteredFlats.slice(offset, limit + offset)
+      flats: filteredFlats.slice(offset, limit + offset),
     };
   }
 
   async findMy(userId, { shared, from, to }): Promise<FlatEntity[]> {
     const flats = await FlatEntity.find({
-      relations: [
-        'city',
-        'propertyValues',
-        'propertyValues.property',
-        'reservations',
-      ],
+      relations: ['city', 'propertyValues', 'propertyValues.property', 'reservations'],
       where: {
-        shared,
         user: { id: userId },
-        deleted: false
+        deleted: false,
       },
     });
 
@@ -170,7 +164,7 @@ export class FlatService {
   async findById(id): Promise<FlatEntity> {
     return FlatEntity.findOne({
       where: { id },
-      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates', 'reservations']
+      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates', 'reservations'],
     });
   }
 
@@ -254,8 +248,6 @@ export class FlatService {
   }
 
   async delete(userId: number, flatId: number): Promise<void> {
-
     await FlatEntity.update<FlatEntity>({ id: flatId, user: { id: userId } }, { deleted: true });
-
   }
 }

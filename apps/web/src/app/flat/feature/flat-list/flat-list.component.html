@@ -6,54 +6,14 @@
     (paramsChange)="setFiltersParams($event)"
   ></sf-flat-filters>
   <div class="max-w-screen-lg mx-auto">
-    <a *ngFor="let flat of vm.flatsData.flats" [routerLink]="['/flat/card', flat.id]" target="_blank" draggable="false">
-      <tui-island class="mt-5 p-0 hover:scale-105 transition-all hover:shadow-md">
-        <div class="grid grid-cols-5">
-          <tui-carousel [draggable]="true" [(index)]="imageIndexes[flat.id]" class="-mx-5 col-span-2">
-            <ng-container *ngFor="let photo of flat.photos; let i = index">
-              <img
-                *tuiItem
-                draggable="false"
-                src="/api/photos/flat/{{ flat.id }}/{{ photo }}"
-                class="h-full object-cover rounded-xl aspect-video"
-                [class.item_active]="i === imageIndexes[flat.id] + 1"
-              />
-            </ng-container>
-          </tui-carousel>
-          <div class="col-span-2 flex flex-col justify-between p-4">
-            <div class="font-semibold">{{ flat.name }}</div>
-            <div class="flex gap-x-6">
-              <div>
-                <div class="text-gray-500">Площадь</div>
-                <div>{{ flat.square | number }} м²</div>
-              </div>
-              <div>
-                <div class="text-gray-500">Комнат</div>
-                <div>{{ flat.rooms | number }}</div>
-              </div>
-              <div>
-                <div class="text-gray-500">Гостей</div>
-                <div>до {{ flat.guests | number }}</div>
-              </div>
-            </div>
-            <div class="text-gray-500">{{ flat.city.name }}, {{ flat.address }}</div>
-          </div>
-          <div class="col-span-1 p-4 border-l h-full flex flex-col justify-between">
-            <div class="flex items-center">
-              <div class="text-gray-500">Отзывов: {{ flat.reviewsCount | number }}</div>
-              <tui-svg src="tuiIconStar" class="icon text-blue-400 ml-6"></tui-svg>
-              <div class="text-bold">{{ flat.reviewsRating }}</div>
-            </div>
-            <div class="text-right">
-              <div>
-                <span class="font-bold text-lg">{{ flat.price | number }} ₽</span>
-                <span class="ml-3 text-gray-500">за сутки</span>
-              </div>
-              <div class="text-gray-500">Всего {{ flat.price * vm.daysCount | number }} ₽</div>
-            </div>
-          </div>
-        </div>
-      </tui-island>
+    <a
+      *ngFor="let flat of vm.flatsData.flats"
+      [routerLink]="['/flat/card', flat.id]"
+      target="_blank"
+      draggable="false"
+      class="block mt-5 hover:scale-105 transition-all hover:shadow-md"
+    >
+      <sf-flat-island [flat]="flat" [daysCount]="vm.daysCount"></sf-flat-island>
     </a>
   </div>
 </ng-container>

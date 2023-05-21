@@ -1,0 +1,17 @@
+<h1 class="tui-text_h1">Личный кабинет</h1>
+
+<div class="grid grid-cols-4 mt-6">
+  <div class="col-span-1 border-r p-4">
+    <a
+      *ngFor="let menuItem of menuItems"
+      [routerLink]="menuItem.routerLink"
+      [routerLinkActiveOptions]="{ exact: true }"
+      routerLinkActive="bg-blue-100 font-bold"
+      class="p-4 rounded-xl block mb-2 hover:bg-blue-200 transition-all"
+      >{{ menuItem.name }}</a
+    >
+  </div>
+  <div class="col-span-3 p-4">
+    <router-outlet></router-outlet>
+  </div>
+</div>

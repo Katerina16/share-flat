@@ -4,7 +4,7 @@
   <a
     *ngFor="let reservation of reservations$ | async"
     [routerLink]="['/reservation/card', reservation.id]"
-    class="hover:scale-105 hover:shadow-md block mt-5"
+    class="hover:scale-105 transition-all block mt-5"
     target="_blank"
     draggable="false"
   >

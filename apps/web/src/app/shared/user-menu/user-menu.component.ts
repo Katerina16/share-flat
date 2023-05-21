@@ -8,18 +8,19 @@ import { Store } from '@ngrx/store';
 import * as AuthActions from '../../core/store/auth/actions';
 import * as AuthSelectors from '../../core/store/auth/selectors';
 import { AppState } from '../../core/store/reducers';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'sf-user-menu',
   standalone: true,
-  imports: [CommonModule, LoginButtonComponent, TuiButtonModule, TuiAvatarModule],
+  imports: [CommonModule, LoginButtonComponent, TuiButtonModule, TuiAvatarModule, RouterLink],
   templateUrl: './user-menu.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserMenuComponent implements OnInit {
   user$ = this.store.select(AuthSelectors.selectCurrentUser);
 
-  constructor(private readonly store: Store<AppState>) { }
+  constructor(private readonly store: Store<AppState>) {}
 
   ngOnInit(): void {
     this.store.dispatch(AuthActions.tryGetCurrentUser());

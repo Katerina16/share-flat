@@ -168,7 +168,7 @@ export class FlatCardComponent implements OnInit {
         )
         .subscribe((ownFlats) => {
           this.ownFlatsLoading = false;
-          this.ownFlats = ownFlats;
+          this.ownFlats = ownFlats.filter(flat => flat.shared);
           this.reservation.sharedFlat = this.ownFlats.length === 1 ? this.ownFlats[0] : undefined;
         });
     }

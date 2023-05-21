@@ -17,6 +17,10 @@ export const CORE_ROUTES: Route[] = [
       {
         path: 'reservation',
         loadChildren: () => import('../reservation/reservation.routes').then(m => m.RESERVATION_ROUTES)
+      },
+      {
+        path: 'lk',
+        loadChildren: () => import('../lk/lk.routes').then(m => m.LK_ROUTES)
       }
     ]
   }

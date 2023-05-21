@@ -1,0 +1,35 @@
+<div *ngIf="user$ | async as user">
+  <tui-island>
+    <h3 class="tui-island__title flex items-center">Данные профиля</h3>
+    <div class="grid grid-cols-2 gap-y-2">
+      <div class="grid grid-cols-2">
+        <div class="font-bold">Имя:</div>
+        <div>{{ user.firstName }}</div>
+      </div>
+      <div class="grid grid-cols-2">
+        <div class="font-bold">Телефон:</div>
+        <div>{{ user.phone | tuiFormatPhone }}</div>
+      </div>
+      <div class="grid grid-cols-2">
+        <div class="font-bold">Фамилия:</div>
+        <div>{{ user.lastName }}</div>
+      </div>
+      <div class="grid grid-cols-2">
+        <div class="font-bold">Email:</div>
+        <div>{{ user.email }}</div>
+      </div>
+      <div class="grid grid-cols-2">
+        <div class="font-bold">Отчество:</div>
+        <div>{{ user.middleName }}</div>
+      </div>
+      <div class="grid grid-cols-2">
+        <div class="font-bold">На сайте с:</div>
+        <div>{{ user.created | date : 'dd.MM.yyyy' }}</div>
+      </div>
+      <div class="grid grid-cols-2">
+        <div class="font-bold">Дата рождения:</div>
+        <div>{{ user.birthDate | date : 'dd.MM.yyyy' }}</div>
+      </div>
+    </div>
+  </tui-island>
+</div>
