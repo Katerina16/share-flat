@@ -30,6 +30,7 @@ export class FlatController {
 
   @Get()
   find(
+    @Req() req,
     @Query('shared', ParseBoolPipe) shared: boolean,
     @Query('city') cityId: number,
     @Query('from') from: string,
@@ -44,9 +45,35 @@ export class FlatController {
     @Query('limit', new DefaultValuePipe('20'), ParseIntPipe) limit?: number,
     @Query('offset', new DefaultValuePipe('0'), ParseIntPipe) offset?: number,
   ): Promise<{ count: number, flats: FlatEntity[] }> {
-
-    return this.flatService.find({ limit, offset, shared, cityId, from, to, guests, squareFrom, squareTo, priceFrom, priceTo, rooms, properties });
+    return this.flatService.find({
+      limit,
+      offset,
+      shared,
+      cityId,
+      from,
+      to,
+      guests,
+      squareFrom,
+      squareTo,
+      priceFrom,
+      priceTo,
+      rooms,
+      properties
+    });
   }
+
+  @UseGuards(JwtGuard)
+  @Get('my')
+  findMy(
+    @Req() req,
+    @Query('from') from: string,
+    @Query('to') to: string,
+    @Query('shared', ParseBoolPipe) shared: boolean,
+  ): Promise<FlatEntity[]> {
+    const { user: { id } } = req;
+    return this.flatService.findMy(id, { shared, from, to });
+  }
+
 
   @UseGuards(JwtGuard)
   @Get(':id')
