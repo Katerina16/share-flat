@@ -35,13 +35,13 @@ export class FlatService {
         'user',
         'reservations',
         'sharedReservations',
-        'reviews',
+        'reviews'
       ],
       where: {
         city: { id: cityId },
         guests: MoreThanOrEqual(guests),
-        shared,
-      },
+        shared
+      }
     });
 
     const filteredFlats = flats.filter((flat) => {
@@ -127,7 +127,7 @@ export class FlatService {
 
     return {
       count: filteredFlats.length,
-      flats: filteredFlats.slice(offset, limit + offset),
+      flats: filteredFlats.slice(offset, limit + offset)
     };
   }
 
@@ -164,7 +164,7 @@ export class FlatService {
   async findById(id): Promise<FlatEntity> {
     return FlatEntity.findOne({
       where: { id },
-      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates'],
+      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates', 'reservations']
     });
   }
 
