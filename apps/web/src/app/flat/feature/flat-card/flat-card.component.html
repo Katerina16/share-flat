@@ -78,6 +78,14 @@
         </div>
       </tui-island>
 
+      <tui-island class="mt-5 p-0 overflow-hidden">
+        <h3 class="tui-island__title flex items-center px-4 pt-4">
+          <tui-svg src="tuiIconMapPin" class="icon text-blue-400"></tui-svg>
+          Местоположение
+        </h3>
+        <sf-map [longitude]="flat.longitude" [latitude]="flat.latitude"></sf-map>
+      </tui-island>
+
       <ng-container *ngIf="reviews$ | async as reviews">
         <ng-container *ngIf="reviews.length">
           <tui-island class="mt-5">

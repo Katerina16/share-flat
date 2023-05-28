@@ -25,6 +25,7 @@ import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
 import { LoginButtonComponent } from '../../../shared/login-button/login-button.component';
 import { ReservationEntity } from '@sf/interfaces/modules/flat/entities/reservation.entity';
 import { addDays, isAfter, isBefore, subDays } from 'date-fns';
+import { MapComponent } from '../../../shared/map/map.component';
 
 @Component({
   selector: 'sf-flat-card',
@@ -44,7 +45,8 @@ import { addDays, isAfter, isBefore, subDays } from 'date-fns';
     TuiCheckboxLabeledModule,
     LoginButtonComponent,
     TuiSelectModule,
-    TuiDataListWrapperModule
+    TuiDataListWrapperModule,
+    MapComponent
   ],
   templateUrl: './flat-card.component.html'
 })
@@ -91,7 +93,9 @@ export class FlatCardComponent implements OnInit {
         this.flatId = +params['id'];
         return this.http.get<FlatEntity>(`/flat/${this.flatId}`);
       }),
-      tap(flat => (this.reservations = flat.reservations)),
+      tap((flat) => {
+        this.reservations = flat.reservations;
+      }),
       shareReplay(1)
     );
 
