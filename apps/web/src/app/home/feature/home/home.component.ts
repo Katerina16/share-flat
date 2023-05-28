@@ -4,17 +4,25 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CityEntity } from '@sf/interfaces/modules/city/entities/city.entity';
-import { TuiDayRange } from '@taiga-ui/cdk';
+import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
 import { TuiButtonModule, TuiDataListModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
-import { TuiCheckboxLabeledModule, TuiDataListWrapperModule, TuiInputCountModule, TuiInputDateRangeModule, TuiInputModule, TuiSelectModule, tuiItemsHandlersProvider } from '@taiga-ui/kit';
+import {
+  TuiCheckboxLabeledModule,
+  TuiDataListWrapperModule,
+  TuiInputCountModule,
+  TuiInputDateRangeModule,
+  TuiInputModule,
+  tuiItemsHandlersProvider,
+  TuiSelectModule
+} from '@taiga-ui/kit';
+import { addDays, isAfter } from 'date-fns';
 
 interface HomeSearchForm {
-  city: FormControl<CityEntity | null>,
-  period: FormControl<TuiDayRange | null>,
-  guests: FormControl<number>,
-  shared: FormControl<boolean>
+  city: FormControl<CityEntity | null>;
+  period: FormControl<TuiDayRange | null>;
+  guests: FormControl<number>;
+  shared: FormControl<boolean>;
 }
-
 
 @Component({
   selector: 'sf-notes',
@@ -47,11 +55,11 @@ export class HomeComponent {
     shared: new FormControl(false, { nonNullable: true })
   });
 
-  constructor(
-    private fb: FormBuilder,
-    private http: HttpClient,
-    private router: Router
-  ) { }
+  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {}
+
+  isDateDisabled(day: TuiDay): boolean {
+    return isAfter(new Date(), addDays(day.toUtcNativeDate(), 1));
+  }
 
   search(): void {
     this.form.markAllAsTouched();
@@ -64,11 +72,11 @@ export class HomeComponent {
     const queryParams = {
       city: formValue.city?.id,
       guests: formValue.guests,
-      from: formValue.period?.from.toLocalNativeDate().toISOString().substring(0, 10),
-      to: formValue.period?.to.toLocalNativeDate().toISOString().substring(0, 10),
+      from: formValue.period?.from.toUtcNativeDate().toISOString().substring(0, 10),
+      to: formValue.period?.to.toUtcNativeDate().toISOString().substring(0, 10),
       shared: formValue.shared
     };
-
+    
     this.router.navigate(['/flat/search'], { queryParams }).catch(console.error);
   }
 }

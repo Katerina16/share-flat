@@ -10,7 +10,7 @@
             <tui-data-list-wrapper *tuiDataList [items]="cities$ | async"></tui-data-list-wrapper>
           </tui-select>
 
-          <tui-input-date-range formControlName="period" class="ml-2 w-full">
+          <tui-input-date-range formControlName="period" [disabledItemHandler]="isDateDisabled" class="ml-2 w-full">
             Выберите даты
             <input tuiTextfield placeholder="Заезд - Отъезд" />
           </tui-input-date-range>
@@ -21,7 +21,7 @@
           </tui-input-count>
 
           <div class="bg-white border rounded-xl px-2 py-4 h-14 ml-2">
-            <tui-checkbox-labeled formControlName="shared" size="l" class="ml-2"> Обмен </tui-checkbox-labeled>
+            <tui-checkbox-labeled formControlName="shared" size="l" class="ml-2"> Обмен</tui-checkbox-labeled>
           </div>
         </div>
 

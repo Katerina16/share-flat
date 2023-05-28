@@ -7,7 +7,12 @@
         <tui-data-list-wrapper *tuiDataList [items]="cities"></tui-data-list-wrapper>
       </tui-select>
 
-      <tui-input-date-range [(ngModel)]="filters.dates" name="dates" class="ml-2 w-full">
+      <tui-input-date-range
+        [(ngModel)]="filters.dates"
+        [disabledItemHandler]="isDateDisabled"
+        name="dates"
+        class="ml-2 w-full"
+      >
         Даты
         <input tuiTextfield placeholder="Заезд - Отъезд" />
       </tui-input-date-range>

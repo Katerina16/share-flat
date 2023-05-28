@@ -23,6 +23,7 @@ import { SearchFilters } from '../../models/seacrh-filters.model';
 import { SearchParams } from '../../models/search-params.model';
 import { CityEntity } from '@sf/interfaces/modules/city/entities/city.entity';
 import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
+import { addDays, isAfter } from 'date-fns';
 
 @Component({
   selector: 'sf-flat-filters',
@@ -70,6 +71,10 @@ export class FlatFiltersComponent implements OnInit {
         value: false
       }))
     };
+  }
+
+  isDateDisabled(day: TuiDay): boolean {
+    return isAfter(new Date(), addDays(day.toUtcNativeDate(), 1));
   }
 
   search(): void {
