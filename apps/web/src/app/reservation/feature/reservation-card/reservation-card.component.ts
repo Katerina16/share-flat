@@ -41,9 +41,9 @@ export class ReservationCardComponent implements OnInit {
   messages: MessageEntity[] = [];
   messageControl = new FormControl('', [Validators.required, Validators.minLength(1)]);
 
-  currentUser: User | null;
+  currentUser: User;
   currentUserReview: ReviewEntity;
-  reservationEnded: boolean;
+  canLeaveReview: boolean;
 
   reviewForm: FormGroup;
 
@@ -57,30 +57,34 @@ export class ReservationCardComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly store: Store<AppState>,
     private readonly fb: FormBuilder
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.store.select(selectCurrentUser).subscribe((user) => {
-      this.currentUser = user;
-    });
-
     const reservationId = this.route.snapshot.params['id'];
     combineLatest([
       this.store.select(selectCurrentUser),
       this.http.get<ReservationEntity>('/reservation/' + reservationId)
     ]).subscribe(([user, reservation]) => {
       this.reservation = reservation;
-      this.currentUser = user;
-      this.reservationEnded = Date.now() > new Date(reservation.to).getDate();
+      this.currentUser = user as User;
 
-      if (this.reservation.flat.user.id !== user?.id) {
-        this.currentUserReview = this.reservation.flat.reviews[0];
-      } else if (this.reservation.sharedFlat.user.id !== user?.id) {
-        this.currentUserReview = this.reservation.sharedFlat.reviews[0];
+      const reservationEnded = Date.now() > new Date(reservation.to).getDate();
+
+      if (this.reservation.sharedFlat) {
+        this.canLeaveReview = reservationEnded;
+        if (this.reservation.flat.user.id !== user?.id) {
+          this.currentUserReview = this.reservation.flat.reviews[0];
+        } else if (this.reservation.sharedFlat.user.id !== user?.id) {
+          this.currentUserReview = this.reservation.sharedFlat.reviews[0];
+        }
+      } else {
+        this.canLeaveReview = this.reservation.flat.user.id !== this.currentUser.id && reservationEnded;
+        if (this.canLeaveReview) {
+          this.currentUserReview = this.reservation.flat.reviews[0];
+        }
       }
 
-      if (!this.currentUserReview) {
+      if (!this.currentUserReview && this.canLeaveReview) {
         this.reviewForm = this.fb.group({
           rating: new FormControl(0, [Validators.required, Validators.min(1)]),
           text: new FormControl('', [Validators.required, Validators.minLength(1)])
@@ -113,9 +117,8 @@ export class ReservationCardComponent implements OnInit {
       return;
     }
 
-    const reviewFlat = this.reservation.flat.user.id === this.currentUser?.id
-      ? this.reservation.sharedFlat
-      : this.reservation.flat;
+    const reviewFlat =
+      this.reservation.flat.user.id === this.currentUser?.id ? this.reservation.sharedFlat : this.reservation.flat;
 
     const body = {
       ...this.reviewForm.getRawValue(),
