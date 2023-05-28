@@ -68,7 +68,7 @@ export class ReservationCardComponent implements OnInit {
       this.reservation = reservation;
       this.currentUser = user as User;
 
-      const reservationEnded = Date.now() > new Date(reservation.to).getDate();
+      const reservationEnded = Date.now() > new Date(reservation.to).getTime();
 
       if (this.reservation.sharedFlat) {
         this.canLeaveReview = reservationEnded;
