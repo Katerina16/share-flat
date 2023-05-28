@@ -1,9 +1,20 @@
-<a
-  *ngFor="let flat of flats$ | async"
-  [routerLink]="['/flat/card', flat.id]"
-  target="_blank"
-  draggable="false"
-  class="block mt-5"
->
-  <sf-flat-island [flat]="flat"></sf-flat-island>
-</a>
+<div *ngFor="let flat of flats$ | async">
+  <a [routerLink]="['/flat/card', flat.id]" target="_blank" draggable="false" class="block mt-6">
+    <sf-flat-island [flat]="flat"></sf-flat-island>
+  </a>
+  <div class="flex justify-end gap-2 mt-3">
+    <button tuiButton type="button" size="s" icon="tuiIconEdit2" [routerLink]="['/flat/edit', flat.id]">
+      Редактировать
+    </button>
+    <button
+      tuiButton
+      type="button"
+      size="s"
+      icon="tuiIconTrash"
+      appearance="secondary-destructive"
+      (click)="deleteFlat(flat)"
+    >
+      Удалить
+    </button>
+  </div>
+</div>
