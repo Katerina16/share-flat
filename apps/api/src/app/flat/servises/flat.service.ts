@@ -13,20 +13,20 @@ import { FreeDateEntity } from '@sf/interfaces/modules/flat/entities/free.date.e
 @Injectable()
 export class FlatService {
   async find({
-    limit,
-    offset,
-    shared,
-    cityId,
-    from,
-    to,
-    guests,
-    squareFrom,
-    squareTo,
-    priceFrom,
-    priceTo,
-    rooms,
-    properties,
-  }): Promise<{ count: number; flats: FlatEntity[] }> {
+               limit,
+               offset,
+               shared,
+               cityId,
+               from,
+               to,
+               guests,
+               squareFrom,
+               squareTo,
+               priceFrom,
+               priceTo,
+               rooms,
+               properties,
+             }): Promise<{ count: number; flats: FlatEntity[] }> {
     const flats = await FlatEntity.find({
       relations: [
         'city',
@@ -134,12 +134,21 @@ export class FlatService {
 
   async findMy(userId, { shared, from, to }): Promise<FlatEntity[]> {
     const flats = await FlatEntity.find({
-      relations: ['city', 'propertyValues', 'propertyValues.property', 'reservations'],
+      relations: ['city', 'propertyValues', 'propertyValues.property', 'reservations', 'reviews'],
       where: {
         user: { id: userId },
         deleted: false,
       },
     });
+
+    for (const flat of flats) {
+      flat.reviewsCount = flat.reviews.length;
+
+      flat.reviewsRating =
+        flat.reviewsCount > 0 ? flat.reviews.reduce((acc, curr) => acc + curr.rating, 0) / flat.reviewsCount : 0;
+
+      flat.reviewsRating = Math.round(flat.reviewsRating * 100) / 100;
+    }
 
     if (from && to) {
       return flats.filter((flat) => {
@@ -192,6 +201,7 @@ export class FlatService {
     const { propertyValues, freeDates } = flatData;
     delete flatData.propertyValues;
     delete flatData.freeDates;
+    delete flatData.reservations;
 
     await FlatEntity.update<FlatEntity>({ id: flatId }, flatData);
 

@@ -12,7 +12,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './lk-reservations.component.html'
 })
 export class LkReservationsComponent {
-  reservations$ = this.http.get<ReservationEntity[]>('/reservation', { params: { my: true } });
+  reservations$ = this.http.get<ReservationEntity[]>('/reservation');
 
   constructor(private readonly http: HttpClient) {}
 }

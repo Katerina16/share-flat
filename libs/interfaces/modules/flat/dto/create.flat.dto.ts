@@ -1,9 +1,10 @@
-import {IsNotEmpty, IsOptional, IsString} from "class-validator";
-import {FlatEntity} from "@sf/interfaces/modules/flat/entities/flat.entity";
-import {PropertyValueEntity} from "@sf/interfaces/modules/flat/entities/property.value.entity";
-import {UserEntity} from "@sf/interfaces/modules/user/entities/user.entity";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
+import { PropertyValueEntity } from "@sf/interfaces/modules/flat/entities/property.value.entity";
+import { UserEntity } from "@sf/interfaces/modules/user/entities/user.entity";
 import { CityEntity } from "@sf/interfaces/modules/city/entities/city.entity";
 import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.entity";
+import { ReservationEntity } from "@sf/interfaces/modules/flat/entities/reservation.entity";
 
 export class CreateFlatDto implements Partial<FlatEntity> {
   @IsNotEmpty({
@@ -82,5 +83,8 @@ export class CreateFlatDto implements Partial<FlatEntity> {
 
   @IsOptional()
   freeDates: FreeDateEntity[];
+
+  @IsOptional()
+  reservations: ReservationEntity[];
 
 }
