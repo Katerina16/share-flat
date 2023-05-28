@@ -1,13 +1,11 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
-import {UserEntity} from "@sf/interfaces/modules/user/entities/user.entity";
-import {CreateUserDto} from "@sf/interfaces/modules/user/dto/create.user.dto";
-import {UserCryptoService} from "./user.crypto.service";
-import {UpdateUserDto} from "@sf/interfaces/modules/user/dto/update.user.dto";
-
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { UserEntity } from '@sf/interfaces/modules/user/entities/user.entity';
+import { CreateUserDto } from '@sf/interfaces/modules/user/dto/create.user.dto';
+import { UserCryptoService } from './user.crypto.service';
+import { UpdateUserDto } from '@sf/interfaces/modules/user/dto/update.user.dto';
 
 @Injectable()
 export class UserService {
-
   async getUserById(id: number): Promise<UserEntity> {
     return UserEntity.findOne({ where: { id } });
   }
@@ -17,23 +15,20 @@ export class UserService {
   }
 
   async create(user: CreateUserDto): Promise<UserEntity> {
-
     user.password = UserCryptoService.encrypt(user.password);
 
     return UserEntity.create<UserEntity>(user as UserEntity).save();
-
   }
 
   async update(id: number, user: UpdateUserDto): Promise<UserEntity> {
     const existsUser = await this.findUserByEmail(user.email);
 
-    if (existsUser) {
-      throw new BadRequestException('Пользователь уже существует');
+    if (!existsUser) {
+      throw new BadRequestException('Пользователь не существует');
     }
 
     await UserEntity.update(id, user);
 
     return this.getUserById(id);
-
   }
 }

@@ -2,7 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import * as AuthActions from './actions';
 
 export interface User {
-  id: number,
+  id: number;
   firstName: string;
   lastName: string;
   middleName: string;
@@ -14,14 +14,14 @@ export interface User {
 }
 
 export interface AuthUser {
-  user: User,
+  user: User;
   token: string;
 }
 
 export interface AuthState {
-  loading: boolean,
-  token: string | null,
-  user: User | null
+  loading: boolean;
+  token: string | null;
+  user: User | null;
 }
 
 const initialState: AuthState = {
@@ -45,7 +45,17 @@ export const authReducers = createReducer(
     AuthActions.registerFail,
     AuthActions.loginFail,
     AuthActions.getCurrentUserFail,
+    AuthActions.updateUserFail,
     state => ({ ...state, loading: false })
   ),
-  on(AuthActions.logout, state => ({ ...state, user: null, token: null, loading: false }))
+  on(AuthActions.logout, state => ({ ...state, user: null, token: null, loading: false })),
+  on(AuthActions.updateUser, state => ({ ...state, loading: true })),
+  on(AuthActions.updateUserSuccess, (state, action) => ({
+    ...state,
+    user: {
+      ...(state.user as User),
+      ...action.user
+    },
+    loading: false
+  }))
 );

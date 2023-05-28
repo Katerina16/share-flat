@@ -7,7 +7,7 @@ import { AuthUser, User } from '../../core/store/auth/reducers';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private readonly http: HttpClient) { }
+  constructor(private readonly http: HttpClient) {}
 
   login(loginData: LoginUserDto): Observable<AuthUser> {
     return this.http.post<AuthUser>('/auth/login', loginData);
@@ -19,5 +19,9 @@ export class AuthService {
 
   getCurrentUser(): Observable<User> {
     return this.http.get<User>('/user/current');
+  }
+
+  updateUser(user: Partial<User>): Observable<void> {
+    return this.http.put<void>('/user', user);
   }
 }

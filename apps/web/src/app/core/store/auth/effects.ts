@@ -10,65 +10,97 @@ import * as AuthSelectors from './selectors';
 
 @Injectable()
 export class AuthEffects {
-
-  register$ = createEffect(() => this.actions$.pipe(
-    ofType(AuthActions.register),
-    exhaustMap(action => this.authService.register(action.data)
-      .pipe(
-        tap(() => {
-          this.alertService.open('Вы успешно зарегистрированы!', { status: TuiNotification.Success }).subscribe();
-        }),
-        map(() => AuthActions.registerSuccess()),
-        catchError(() => of(AuthActions.registerFail()))
+  register$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.register),
+      exhaustMap(action =>
+        this.authService.register(action.data).pipe(
+          tap(() => {
+            this.alertService.open('Вы успешно зарегистрированы!', { status: TuiNotification.Success }).subscribe();
+          }),
+          map(() => AuthActions.registerSuccess()),
+          catchError(() => of(AuthActions.registerFail()))
+        )
       )
     )
-  ));
+  );
 
-  registerSuccess$ = createEffect(() => this.actions$.pipe(
-    ofType(AuthActions.registerSuccess)
-  ), { dispatch: false });
+  registerSuccess$ = createEffect(() => this.actions$.pipe(ofType(AuthActions.registerSuccess)), { dispatch: false });
 
-  login$ = createEffect(() => this.actions$.pipe(
-    ofType(AuthActions.login),
-    exhaustMap(action => this.authService.login(action.data)
-      .pipe(
-        map(data => AuthActions.loginSuccess(data)),
-        catchError(() => of(AuthActions.loginFail()))
+  login$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.login),
+      exhaustMap(action =>
+        this.authService.login(action.data).pipe(
+          map(data => AuthActions.loginSuccess(data)),
+          catchError(() => of(AuthActions.loginFail()))
+        )
       )
     )
-  ));
+  );
 
-  loginSuccess$ = createEffect(() => this.actions$.pipe(
-    ofType(AuthActions.loginSuccess),
-    tap(data => localStorage.setItem('token', data.token))
-  ), { dispatch: false });
+  loginSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.loginSuccess),
+        tap(data => localStorage.setItem('token', data.token))
+      ),
+    { dispatch: false }
+  );
 
-  logout$ = createEffect(() => this.actions$.pipe(
-    ofType(AuthActions.logout),
-    tap(() => localStorage.removeItem('token'))
-  ), { dispatch: false });
+  logout$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.logout),
+        tap(() => localStorage.removeItem('token'))
+      ),
+    { dispatch: false }
+  );
 
-  tryGetCurrentUser$ = createEffect(() => this.actions$.pipe(
-    ofType(AuthActions.tryGetCurrentUser),
-    concatLatestFrom(() => this.store.select(AuthSelectors.selectToken)),
-    filter(([, token]) => !!token),
-    map(() => AuthActions.getCurrentUser())
-  ));
+  tryGetCurrentUser$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.tryGetCurrentUser),
+      concatLatestFrom(() => this.store.select(AuthSelectors.selectToken)),
+      filter(([, token]) => !!token),
+      map(() => AuthActions.getCurrentUser())
+    )
+  );
 
-  getCurrentUser$ = createEffect(() => this.actions$.pipe(
-    ofType(AuthActions.getCurrentUser),
-    exhaustMap(() => this.authService.getCurrentUser()
-      .pipe(
-        map(user => AuthActions.getCurrentUserSuccess({ user })),
-        catchError(() => of(AuthActions.getCurrentUserFail()))
+  getCurrentUser$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.getCurrentUser),
+      exhaustMap(() =>
+        this.authService.getCurrentUser().pipe(
+          map(user => AuthActions.getCurrentUserSuccess({ user })),
+          catchError(() => of(AuthActions.getCurrentUserFail()))
+        )
       )
     )
-  ));
+  );
+
+  updateUser$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.updateUser),
+      exhaustMap(action =>
+        this.authService.updateUser(action.user).pipe(
+          tap(() => {
+            this.alertService.open('Профиль успешно изменен!', { status: TuiNotification.Success }).subscribe();
+          }),
+          map(() => AuthActions.updateUserSuccess({ user: action.user })),
+          catchError(() => of(AuthActions.updateUserFail()))
+        )
+      )
+    )
+  );
+
+  updateUserSuccess$ = createEffect(() => this.actions$.pipe(ofType(AuthActions.updateUserSuccess)), {
+    dispatch: false
+  });
 
   constructor(
     private actions$: Actions,
     private readonly store: Store<AppState>,
     private readonly authService: AuthService,
     private readonly alertService: TuiAlertService
-  ) { }
+  ) {}
 }

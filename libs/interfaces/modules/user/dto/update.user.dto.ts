@@ -1,9 +1,7 @@
-import {IsDate, IsEmail, IsMobilePhone, IsOptional} from 'class-validator';
-import {UserEntity} from "../entities/user.entity";
-
+import { IsEmail, IsMobilePhone, IsOptional } from 'class-validator';
+import { UserEntity } from '../entities/user.entity';
 
 export class UpdateUserDto implements Partial<UserEntity> {
-
   @IsOptional()
   firstName: string;
 
@@ -14,21 +12,26 @@ export class UpdateUserDto implements Partial<UserEntity> {
   middleName: string;
 
   @IsOptional()
-  @IsEmail({
-    allow_display_name: false
-  }, {
-    message: 'Некорректно заполнено поле $property'
-  })
+  @IsEmail(
+    {
+      allow_display_name: false,
+    },
+    {
+      message: 'Некорректно заполнено поле $property',
+    }
+  )
   email: string;
 
   @IsOptional()
-  @IsMobilePhone('ru-RU', {}, {
-    message: 'Некорректно заполнено поле $property',
-  })
+  @IsMobilePhone(
+    'ru-RU',
+    {},
+    {
+      message: 'Некорректно заполнено поле $property',
+    }
+  )
   phone: string;
 
   @IsOptional()
-  @IsDate()
   birthDate: Date;
-
 }

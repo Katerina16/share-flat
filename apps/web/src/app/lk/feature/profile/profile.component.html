@@ -31,5 +31,17 @@
         <div>{{ user.birthDate | date : 'dd.MM.yyyy' }}</div>
       </div>
     </div>
+
+    <button
+      tuiButton
+      type="button"
+      class="mt-6"
+      appearance="outline"
+      size="s"
+      icon="tuiIconEdit2"
+      (click)="openEditProfileModal()"
+    >
+      Редактировать
+    </button>
   </tui-island>
 </div>
