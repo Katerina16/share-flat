@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ReservationEntity } from '@sf/interfaces/modules/flat/entities/reservation.entity';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ReservationIslandComponent } from '../../ui/reservation-island/reservation-island.component';
 import { TuiIslandModule, TuiRatingModule, TuiTextAreaModule } from '@taiga-ui/kit';
 import { TuiButtonModule, TuiFormatPhonePipeModule, TuiSvgModule } from '@taiga-ui/core';
@@ -15,6 +15,7 @@ import { selectCurrentUser } from '../../../core/store/auth/selectors';
 import { ReviewEntity } from '@sf/interfaces/modules/flat/entities/review.entity';
 import { User } from '../../../core/store/auth/reducers';
 import { combineLatest } from 'rxjs';
+import { AuthEffects } from '../../../core/store/auth/effects';
 
 @Component({
   selector: 'sf-reservation-card',
@@ -56,7 +57,9 @@ export class ReservationCardComponent implements OnInit {
     private readonly http: HttpClient,
     private readonly route: ActivatedRoute,
     private readonly store: Store<AppState>,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
+    private readonly authEffects: AuthEffects,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
@@ -95,6 +98,8 @@ export class ReservationCardComponent implements OnInit {
     this.http.get<MessageEntity[]>('/message/' + reservationId).subscribe((messages) => {
       this.messages = messages;
     });
+
+    this.authEffects.logout$.subscribe(() => this.router.navigate(['/']));
   }
 
   sendMessage(): void {

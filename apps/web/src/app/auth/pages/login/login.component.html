@@ -1,5 +1,5 @@
 <h2 class="tui-text_h2 text-center mb-6">Вход</h2>
-<form [formGroup]="form">
+<form [formGroup]="form" (ngSubmit)="login()">
   <tui-input formControlName="email">
     Email
     <input tuiTextfield type="email" />
@@ -12,7 +12,7 @@
   </tui-input>
   <tui-error formControlName="password" [error]="[] | tuiFieldError | async"></tui-error>
 
-  <button tuiButton type="button" class="mt-6 w-full" [showLoader]="(loading$ | async) === true" (click)="login()">
+  <button tuiButton type="submit" class="mt-6 w-full" [showLoader]="(loading$ | async) === true" (click)="login()">
     Войти
   </button>
 </form>

@@ -16,13 +16,27 @@
         <a [routerLink]="['/flat/card', reservation[flatField].id]" target="_blank" class="block font-semibold">
           {{ reservation[flatField].name }}
         </a>
-        <tui-tag
-          *ngIf="reservation.sharedFlat && showShared"
-          status="primary"
-          class="tag"
-          [hoverable]="true"
-          value="Обмен"
-        ></tui-tag>
+        <ng-container *ngIf="showShared">
+          <tui-tag *ngIf="reservation.sharedFlat" status="primary" class="tag mr-2" value="Обмен"></tui-tag>
+          <tui-tag
+            *ngIf="reservation.confirmed === true"
+            status="custom"
+            class="tag bg-green-500 text-white mr-2"
+            value="Подтверждено"
+          ></tui-tag>
+          <tui-tag
+            *ngIf="reservation.confirmed === false"
+            status="custom"
+            class="tag ml-2 bg-red-500 text-white mr-2"
+            value="Отклонено"
+          ></tui-tag>
+          <tui-tag
+            *ngIf="reservation.confirmed === null"
+            status="custom"
+            class="tag bg-gray-300"
+            value="Ожидает подтверждения"
+          ></tui-tag>
+        </ng-container>
       </div>
       <div>{{ reservation.from | date : 'dd.MM.yyyy' }} - {{ reservation.to | date : 'dd.MM.yyyy' }}</div>
       <div class="flex gap-x-6">

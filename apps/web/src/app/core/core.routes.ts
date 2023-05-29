@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { isLoggedIn } from './guards/logged-in.guard';
 
 export const CORE_ROUTES: Route[] = [
   {
@@ -16,10 +17,12 @@ export const CORE_ROUTES: Route[] = [
       },
       {
         path: 'reservation',
+        canActivate: [isLoggedIn],
         loadChildren: () => import('../reservation/reservation.routes').then(m => m.RESERVATION_ROUTES)
       },
       {
         path: 'lk',
+        canActivate: [isLoggedIn],
         loadChildren: () => import('../lk/lk.routes').then(m => m.LK_ROUTES)
       }
     ]

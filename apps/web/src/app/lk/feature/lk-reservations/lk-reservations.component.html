@@ -1,9 +1,25 @@
-<a
-  *ngFor="let reservation of reservations$ | async"
-  [routerLink]="['/reservation/card', reservation.id]"
-  class="block mt-5"
-  target="_blank"
-  draggable="false"
->
-  <sf-reservation-island [reservation]="reservation" [showShared]="true"></sf-reservation-island>
-</a>
+<ng-container *ngIf="currentUser$ | async as currentUser">
+  <div *ngFor="let reservation of reservations$ | async | tuiMapper : mapper">
+    <a [routerLink]="['/reservation/card', reservation.id]" target="_blank" draggable="false" class="block mt-6">
+      <sf-reservation-island [reservation]="reservation" [showShared]="true"></sf-reservation-island>
+    </a>
+    <div
+      *ngIf="reservation.confirmed === null && reservation.user.id !== currentUser.id"
+      class="flex justify-end gap-2 mt-3"
+    >
+      <button tuiButton type="button" size="s" icon="tuiIconCheck" (click)="changeStatus(reservation.id, true)">
+        Подтвердить
+      </button>
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        icon="tuiIconSlash"
+        appearance="secondary-destructive"
+        (click)="changeStatus(reservation.id, false)"
+      >
+        Отклонить
+      </button>
+    </div>
+  </div>
+</ng-container>

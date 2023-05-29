@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CreateUserDto } from '@sf/interfaces/modules/user/dto/create.user.dto';
 import { LoginUserDto } from '@sf/interfaces/modules/user/dto/login.user.dto';
-import { Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { AuthUser, User } from '../../core/store/auth/reducers';
 
 @Injectable({ providedIn: 'root' })
@@ -23,5 +23,12 @@ export class AuthService {
 
   updateUser(user: Partial<User>): Observable<void> {
     return this.http.put<void>('/user', user);
+  }
+
+  isLoggedIn(): Observable<boolean> {
+    if (localStorage.getItem('token')) {
+      return this.getCurrentUser().pipe(map(Boolean));
+    }
+    return of(false);
   }
 }

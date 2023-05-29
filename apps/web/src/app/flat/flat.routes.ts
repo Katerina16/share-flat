@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { isLoggedIn } from '../core/guards/logged-in.guard';
 
 export const FLAT_ROUTES: Route[] = [
   {
@@ -13,6 +14,7 @@ export const FLAT_ROUTES: Route[] = [
   },
   {
     path: 'edit/:id',
+    canActivate: [isLoggedIn],
     title: 'Редактирование объявления - Share Flat',
     loadComponent: () => import('./feature/flat-edit/flat-edit.component').then(c => c.FlatEditComponent)
   },

@@ -8,15 +8,36 @@ import { CityEntity } from '@sf/interfaces/modules/city/entities/city.entity';
 import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
 import { PropertyEntity } from '@sf/interfaces/modules/flat/entities/property.entity';
 import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
-import { TuiAlertService, TuiButtonModule, TuiDataListModule, TuiErrorModule, TuiNotification, TuiSvgModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
-import { TuiCheckboxLabeledModule, TuiDataListWrapperModule, TuiFieldErrorPipeModule, TuiInputCountModule, TuiInputDateModule, TuiInputFilesModule, TuiInputModule, TuiInputNumberModule, TuiInputPhoneModule, TuiSelectModule, TuiTextAreaModule, tuiItemsHandlersProvider } from '@taiga-ui/kit';
+import {
+  TuiAlertService,
+  TuiButtonModule,
+  TuiDataListModule,
+  TuiErrorModule,
+  TuiNotification,
+  TuiSvgModule,
+  TuiTextfieldControllerModule
+} from '@taiga-ui/core';
+import {
+  TuiCheckboxLabeledModule,
+  TuiDataListWrapperModule,
+  TuiFieldErrorPipeModule,
+  TuiInputCountModule,
+  TuiInputDateModule,
+  TuiInputFilesModule,
+  TuiInputModule,
+  TuiInputNumberModule,
+  TuiInputPhoneModule,
+  tuiItemsHandlersProvider,
+  TuiSelectModule,
+  TuiTextAreaModule
+} from '@taiga-ui/kit';
 import { combineLatest, concatMap, delay, filter, from, map, mergeMap, of, switchMap, toArray } from 'rxjs';
 import { selectCurrentUser } from '../../../core/store/auth/selectors';
 import { AppState } from '../../../core/store/reducers';
 import { formValidatorProvider } from '../../../shared/form-validators-provider';
 import { LoginButtonComponent } from '../../../shared/login-button/login-button.component';
 import { ExampleNativeDateTransformerDirective } from '../../../shared/to-native-date.directive';
-
+import { AuthEffects } from '../../../core/store/auth/effects';
 
 @Component({
   selector: 'sf-flat-edit',
@@ -48,7 +69,6 @@ import { ExampleNativeDateTransformerDirective } from '../../../shared/to-native
   ]
 })
 export class FlatEditComponent implements OnInit {
-
   form: FormGroup;
   filesControl = new FormControl();
   flat: FlatEntity;
@@ -58,68 +78,75 @@ export class FlatEditComponent implements OnInit {
   user$ = this.store.select(selectCurrentUser);
 
   constructor(
+    private authEffects: AuthEffects,
     private store: Store<AppState>,
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
     private cdRef: ChangeDetectorRef,
     private alertService: TuiAlertService
-  ) { }
+  ) {}
 
   get propertiesControls(): FormGroup[] {
-    return ((this.form.get('propertyValues') as FormArray)?.controls) as FormGroup[];
+    return (this.form.get('propertyValues') as FormArray)?.controls as FormGroup[];
   }
 
   ngOnInit(): void {
-    this.route.params.pipe(
-      switchMap(params => combineLatest([
-        this.http.get<FlatEntity>(`/flat/${params['id']}`),
-        this.user$
-      ])),
-      filter(([flat, user]) => {
-        if (flat.user.id !== user?.id) {
-          this.alertService.open('Ошибка доступа', { status: TuiNotification.Error }).subscribe();
-          this.router.navigate(['/']).catch(console.error);
-          return false;
-        }
-        return true;
-      }),
-      switchMap(([flat]) => {
-        return this.http.get<PropertyEntity[]>('/flat/properties')
-          .pipe(
-            map(properties => ({ flat, properties }))
-          );
-      })
-    ).subscribe(({ flat, properties }) => {
-      this.flat = flat;
-      this.form = new FormGroup({
-        name: new FormControl(flat.name, { nonNullable: true, validators: Validators.required }),
-        city: new FormControl(flat.city, { nonNullable: true, validators: Validators.required }),
-        address: new FormControl(flat.address, { nonNullable: true, validators: Validators.required }),
-        latitude: new FormControl(flat.latitude, { nonNullable: true, validators: Validators.required }),
-        longitude: new FormControl(flat.longitude, { nonNullable: true, validators: Validators.required }),
-        square: new FormControl(flat.square, { nonNullable: true, validators: Validators.required }),
-        floor: new FormControl(flat.floor, { nonNullable: true, validators: Validators.required }),
-        floors: new FormControl(flat.floors, { nonNullable: true, validators: Validators.required }),
-        description: new FormControl(flat.description, { nonNullable: true, validators: Validators.required }),
-        price: new FormControl(flat.price, { nonNullable: true, validators: Validators.required }),
-        shared: new FormControl(flat.shared, { nonNullable: true, validators: Validators.required }),
-        rooms: new FormControl(flat.rooms, { nonNullable: true, validators: Validators.required }),
-        guests: new FormControl(flat.guests, { nonNullable: true, validators: Validators.required })
+    this.route.params
+      .pipe(
+        switchMap(params => combineLatest([this.http.get<FlatEntity>(`/flat/${params['id']}`), this.user$])),
+        filter(([flat, user]) => {
+          if (flat.user.id !== user?.id) {
+            this.alertService.open('Ошибка доступа', { status: TuiNotification.Error }).subscribe();
+            this.router.navigate(['/']).catch(console.error);
+            return false;
+          }
+          return true;
+        }),
+        switchMap(([flat]) => {
+          return this.http.get<PropertyEntity[]>('/flat/properties').pipe(map(properties => ({ flat, properties })));
+        })
+      )
+      .subscribe(({ flat, properties }) => {
+        this.flat = flat;
+        this.form = new FormGroup({
+          name: new FormControl(flat.name, { nonNullable: true, validators: Validators.required }),
+          city: new FormControl(flat.city, { nonNullable: true, validators: Validators.required }),
+          address: new FormControl(flat.address, { nonNullable: true, validators: Validators.required }),
+          latitude: new FormControl(flat.latitude, { nonNullable: true, validators: Validators.required }),
+          longitude: new FormControl(flat.longitude, { nonNullable: true, validators: Validators.required }),
+          square: new FormControl(flat.square, { nonNullable: true, validators: Validators.required }),
+          floor: new FormControl(flat.floor, { nonNullable: true, validators: Validators.required }),
+          floors: new FormControl(flat.floors, { nonNullable: true, validators: Validators.required }),
+          description: new FormControl(flat.description, { nonNullable: true, validators: Validators.required }),
+          price: new FormControl(flat.price, { nonNullable: true, validators: Validators.required }),
+          shared: new FormControl(flat.shared, { nonNullable: true, validators: Validators.required }),
+          rooms: new FormControl(flat.rooms, { nonNullable: true, validators: Validators.required }),
+          guests: new FormControl(flat.guests, { nonNullable: true, validators: Validators.required })
+        });
+
+        this.form.addControl(
+          'propertyValues',
+          new FormArray(
+            properties.map(
+              p =>
+                new FormGroup({
+                  value: new FormControl(
+                    this.flat.propertyValues.find(pv => pv.property.id === p.id)?.value || false
+                  ),
+                  property: new FormGroup({
+                    id: new FormControl(p.id),
+                    name: new FormControl(p.name)
+                  })
+                })
+            )
+          )
+        );
+
+        this.cdRef.detectChanges();
       });
 
-      this.form.addControl(
-        'propertyValues',
-        new FormArray(properties.map(p => new FormGroup({
-          value: new FormControl(this.flat.propertyValues.find(pv => pv.property.id === p.id)?.value || false),
-          property: new FormGroup({
-            id: new FormControl(p.id),
-            name: new FormControl(p.name)
-          })
-        }))));
-
-      this.cdRef.detectChanges();
-    });
+    this.authEffects.logout$.subscribe(() => this.router.navigate(['/']));
   }
 
   deletePhoto(photo: string): void {
@@ -129,17 +156,16 @@ export class FlatEditComponent implements OnInit {
   }
 
   removeFile({ name }: File): void {
-    this.filesControl.setValue(
-      this.filesControl.value?.filter((current: File) => current.name !== name) ?? []
-    );
+    this.filesControl.setValue(this.filesControl.value?.filter((current: File) => current.name !== name) ?? []);
   }
 
   save(): void {
-    this.http.put<FlatEntity>(`/flat/${this.flat.id}`, this.form.value)
+    this.http
+      .put<FlatEntity>(`/flat/${this.flat.id}`, this.form.value)
       .pipe(
-        mergeMap(() => from((this.filesControl.value || []) as File[]).pipe(
-          concatMap(item => of(item).pipe(delay(10)))
-        )),
+        mergeMap(() =>
+          from((this.filesControl.value || []) as File[]).pipe(concatMap(item => of(item).pipe(delay(10))))
+        ),
         mergeMap((file) => {
           const formData = new FormData();
           formData.append('file', file, file.name);
@@ -149,5 +175,4 @@ export class FlatEditComponent implements OnInit {
       )
       .subscribe(() => this.router.navigate([`/flat/card/${this.flat.id}`]));
   }
-
 }

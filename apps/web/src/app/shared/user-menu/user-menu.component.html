@@ -1,23 +1,24 @@
 <div class="ml-8">
   <ng-container *ngIf="user$ | async as user; else loginButton">
-    <a routerLink="/lk">
-      <div class="flex items-center">
+    <div class="flex items-center">
+      <a routerLink="/lk" class="flex">
         <tui-avatar [text]="user.firstName" size="s"></tui-avatar>
         <div class="text-white text-xs ml-2">
           <p>{{ user.firstName }}</p>
           <p>{{ user.lastName }}</p>
         </div>
-        <button
-          tuiIconButton
-          size="s"
-          appearance="flat"
-          type="button"
-          icon="tuiIconLogOut"
-          class="ml-3"
-          (click)="logout()"
-        ></button>
-      </div>
-    </a>
+      </a>
+
+      <button
+        tuiIconButton
+        size="s"
+        appearance="flat"
+        type="button"
+        icon="tuiIconLogOut"
+        class="ml-3"
+        (click)="logout()"
+      ></button>
+    </div>
   </ng-container>
 
   <ng-template #loginButton>
