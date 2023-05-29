@@ -46,7 +46,7 @@ export class FlatService {
     });
 
     const filteredFlats = flats.filter((flat) => {
-      for (const reservation of flat.reservations) {
+      for (const reservation of flat.reservations.filter(({confirmed}) => confirmed)) {
         if (
           !(
             dateFns.isBefore(new Date(to), new Date(reservation.from)) ||
@@ -132,7 +132,7 @@ export class FlatService {
     };
   }
 
-  async findMy(userId, { shared, from, to }): Promise<FlatEntity[]> {
+  async findMy(userId, { from, to }): Promise<FlatEntity[]> {
     const flats = await FlatEntity.find({
       relations: ['city', 'propertyValues', 'propertyValues.property', 'reservations', 'reviews'],
       where: {

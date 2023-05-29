@@ -19,6 +19,9 @@ export class ReservationEntity extends BaseEntity {
   @Column('timestamp without time zone')
   to: Date;
 
+  @Column('boolean', { default: null })
+  confirmed: boolean;
+
   @ManyToOne(() => FlatEntity, (flat) => flat.reservations)
   @JoinColumn({
     name: 'flat_id',
