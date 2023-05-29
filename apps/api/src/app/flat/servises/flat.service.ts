@@ -8,7 +8,6 @@ import fs from 'fs';
 import { PropertyEntity } from '@sf/interfaces/modules/flat/entities/property.entity';
 import * as dateFns from 'date-fns';
 import { MoreThanOrEqual } from 'typeorm';
-import { FreeDateEntity } from '@sf/interfaces/modules/flat/entities/free.date.entity';
 
 @Injectable()
 export class FlatService {
@@ -198,9 +197,8 @@ export class FlatService {
       throw new ForbiddenException();
     }
 
-    const { propertyValues, freeDates } = flatData;
+    const { propertyValues } = flatData;
     delete flatData.propertyValues;
-    delete flatData.freeDates;
     delete flatData.reservations;
 
     await FlatEntity.update<FlatEntity>({ id: flatId }, flatData);
@@ -214,16 +212,6 @@ export class FlatService {
     }
 
     await PropertyValueEntity.insert(propertyValues);
-
-    for (const freeDate of flat.freeDates) {
-      await FreeDateEntity.delete(freeDate.id);
-    }
-
-    for (const freeDate of freeDates) {
-      freeDate.flat = { id: flat.id } as FlatEntity;
-    }
-
-    await FreeDateEntity.insert(freeDates);
 
     return flat;
   }

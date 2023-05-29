@@ -2,7 +2,6 @@ import {Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, JoinColum
 import {UserEntity} from "@sf/interfaces/modules/user/entities/user.entity";
 import {PropertyValueEntity} from "@sf/interfaces/modules/flat/entities/property.value.entity";
 import {ReviewEntity} from "@sf/interfaces/modules/flat/entities/review.entity";
-import {FreeDateEntity} from "@sf/interfaces/modules/flat/entities/free.date.entity";
 import {ReservationEntity} from "@sf/interfaces/modules/flat/entities/reservation.entity";
 import { CityEntity } from "@sf/interfaces/modules/city/entities/city.entity";
 
@@ -80,9 +79,6 @@ export class FlatEntity extends BaseEntity {
 
   @OneToMany(() => ReviewEntity, (review) => review.flat)
   reviews: ReviewEntity[];
-
-  @OneToMany(() => FreeDateEntity, (freeDate) => freeDate.flat)
-  freeDates: FreeDateEntity[];
 
   @OneToMany(() => ReservationEntity, (reservation) => reservation.flat)
   reservations: ReservationEntity[];

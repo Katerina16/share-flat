@@ -4,7 +4,6 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CityEntity } from "@sf/interfaces/modules/city/entities/city.entity";
 import { FlatEntity } from "@sf/interfaces/modules/flat/entities/flat.entity";
-import { FreeDateEntity } from "@sf/interfaces/modules/flat/entities/free.date.entity";
 import { MessageEntity } from "@sf/interfaces/modules/flat/entities/message.entity";
 import { PropertyEntity } from "@sf/interfaces/modules/flat/entities/property.entity";
 import { PropertyValueEntity } from "@sf/interfaces/modules/flat/entities/property.value.entity";
@@ -44,7 +43,6 @@ import { UserModule } from './user/user.module';
           FlatEntity,
           PropertyValueEntity,
           PropertyEntity,
-          FreeDateEntity,
           MessageEntity,
           ReservationEntity,
           ReviewEntity,

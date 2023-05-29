@@ -94,7 +94,6 @@ export class FlatEditComponent implements OnInit {
       this.flat = flat;
       this.form = new FormGroup({
         name: new FormControl(flat.name, { nonNullable: true, validators: Validators.required }),
-        freeDates: new FormControl(flat.freeDates, { nonNullable: true, validators: Validators.required }),
         city: new FormControl(flat.city, { nonNullable: true, validators: Validators.required }),
         address: new FormControl(flat.address, { nonNullable: true, validators: Validators.required }),
         latitude: new FormControl(flat.latitude, { nonNullable: true, validators: Validators.required }),

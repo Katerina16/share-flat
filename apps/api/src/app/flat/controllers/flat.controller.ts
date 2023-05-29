@@ -65,12 +65,11 @@ export class FlatController {
   @Get('my')
   findMy(
     @Req() req,
-    @Query('shared', ParseBoolPipe) shared: boolean,
     @Query('from') from?: string,
     @Query('to') to?: string,
   ): Promise<FlatEntity[]> {
     const { user: { id } } = req;
-    return this.flatService.findMy(id, { shared, from, to });
+    return this.flatService.findMy(id, { from, to });
   }
 
 
