@@ -8,28 +8,29 @@ import { IsNull, Not } from 'typeorm';
 
 @Injectable()
 export class ReservationService {
-  constructor() {}
+  constructor() {
+  }
 
   async find(userId: number, my: boolean): Promise<ReservationEntity[]> {
     const where = my
       ? [
-          {
-            user: { id: userId },
-          },
-          {
-            flat: { user: { id: userId } },
-            sharedFlat: Not(IsNull()),
-          },
-        ]
+        {
+          user: { id: userId },
+        },
+        {
+          flat: { user: { id: userId } },
+          sharedFlat: Not(IsNull()),
+        },
+      ]
       : [
-          {
-            flat: { user: { id: userId } },
-          },
-          {
-            flat: { user: { id: userId } },
-            sharedFlat: Not(IsNull()),
-          },
-        ];
+        {
+          flat: { user: { id: userId } },
+        },
+        {
+          flat: { user: { id: userId } },
+          sharedFlat: Not(IsNull()),
+        },
+      ];
 
     const reservations = await ReservationEntity.find({
       relations: ['user', 'flat', 'flat.city', 'flat.reviews', 'flat.reviews.user', 'sharedFlat'],
@@ -97,5 +98,17 @@ export class ReservationService {
     const reservationInsert = await ReservationEntity.insert(reservationData);
 
     return ReservationEntity.findOne({ where: { id: reservationInsert.identifiers[0].id } });
+  }
+
+  async confirmReservation(userId, id, confirmed) {
+    const reservation = await ReservationEntity.findOne({ where: id, relations: ['flat', 'flat.user'] });
+
+    if (reservation.flat.user.id !== userId) {
+      throw new BadRequestException('Нельзя подвердить не вашу квартиру');
+    }
+
+    reservation.confirmed = confirmed;
+
+    await reservation.save();
   }
 }
