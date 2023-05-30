@@ -172,7 +172,7 @@ export class FlatService {
   async findById(id): Promise<FlatEntity> {
     return FlatEntity.findOne({
       where: { id },
-      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'freeDates', 'reservations'],
+      relations: ['propertyValues', 'propertyValues.property', 'user', 'city', 'reservations'],
     });
   }
 

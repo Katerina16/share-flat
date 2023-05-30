@@ -131,42 +131,44 @@
             <input tuiTextfield />
           </tui-input-date-range>
 
-          <tui-checkbox-labeled [(ngModel)]="reservation.shared" (ngModelChange)="loadOwnFlats()" size="l" class="mt-4">
-            Обмен
-          </tui-checkbox-labeled>
+          <ng-container *ngIf="flat.shared">
+            <tui-checkbox-labeled [(ngModel)]="reservation.shared" (ngModelChange)="loadOwnFlats()" size="l" class="mt-4">
+              Обмен
+            </tui-checkbox-labeled>
 
-          <div *ngIf="reservation.shared && !ownFlatsLoading" class="mt-3">
-            <tui-select
-              *ngIf="ownFlats.length; else noFlatsAvailable"
-              [(ngModel)]="reservation.sharedFlat"
-              [valueContent]="flatContent"
-            >
-              Выберите квартиру для обмена
-              <tui-data-list-wrapper
-                *tuiDataList
-                [items]="ownFlats"
-                [itemContent]="flatContentFull"
-              ></tui-data-list-wrapper>
-            </tui-select>
+            <div *ngIf="reservation.shared && !ownFlatsLoading" class="mt-3">
+              <tui-select
+                *ngIf="ownFlats.length; else noFlatsAvailable"
+                [(ngModel)]="reservation.sharedFlat"
+                [valueContent]="flatContent"
+              >
+                Выберите квартиру для обмена
+                <tui-data-list-wrapper
+                  *tuiDataList
+                  [items]="ownFlats"
+                  [itemContent]="flatContentFull"
+                ></tui-data-list-wrapper>
+              </tui-select>
 
-            <ng-template #noFlatsAvailable>
-              <div class="text-red-400">У вас нет доступных квартир для обмена на выбранные даты</div>
-            </ng-template>
-            <ng-template #flatContent let-myFlat>
-              <div class="font-bold">{{ myFlat.name }}</div>
-            </ng-template>
-            <ng-template #flatContentFull let-myFlat>
-              <div class="flex gap-3">
-                <div *ngIf="myFlat?.photos[0]" class="w-20 flex items-center">
-                  <img src="/api/photos/flat/{{ myFlat.id }}/{{ myFlat?.photos[0] }}" class="w-full rounded" />
+              <ng-template #noFlatsAvailable>
+                <div class="text-red-400">У вас нет доступных квартир для обмена на выбранные даты</div>
+              </ng-template>
+              <ng-template #flatContent let-myFlat>
+                <div class="font-bold">{{ myFlat.name }}</div>
+              </ng-template>
+              <ng-template #flatContentFull let-myFlat>
+                <div class="flex gap-3">
+                  <div *ngIf="myFlat?.photos[0]" class="w-20 flex items-center">
+                    <img src="/api/photos/flat/{{ myFlat.id }}/{{ myFlat?.photos[0] }}" class="w-full rounded" />
+                  </div>
+                  <div class="flex flex-1 justify-center flex-col">
+                    <div class="font-bold">{{ myFlat.name }}</div>
+                    <div class="text-gray-500">{{ myFlat.city.name }}, {{ myFlat.address }}</div>
+                  </div>
                 </div>
-                <div class="flex flex-1 justify-center flex-col">
-                  <div class="font-bold">{{ myFlat.name }}</div>
-                  <div class="text-gray-500">{{ myFlat.city.name }}, {{ myFlat.address }}</div>
-                </div>
-              </div>
-            </ng-template>
-          </div>
+              </ng-template>
+            </div>
+          </ng-container>
 
           <div *ngIf="reservation.dates" class="mt-4">
             <div class="font-bold text-xl">Итого</div>

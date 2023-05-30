@@ -33,7 +33,10 @@ export class AuthEffects {
       exhaustMap(action =>
         this.authService.login(action.data).pipe(
           map(data => AuthActions.loginSuccess(data)),
-          catchError(() => of(AuthActions.loginFail()))
+          catchError(() => {
+            this.alertService.open('Неверный логин или пароль', { status: TuiNotification.Error }).subscribe();
+            return of(AuthActions.loginFail())
+          })
         )
       )
     )
