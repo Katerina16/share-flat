@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
 import { ReviewEntity } from '@sf/interfaces/modules/flat/entities/review.entity';
@@ -26,6 +25,9 @@ import { LoginButtonComponent } from '../../../shared/login-button/login-button.
 import { ReservationEntity } from '@sf/interfaces/modules/flat/entities/reservation.entity';
 import { addDays, isAfter, isBefore, subDays } from 'date-fns';
 import { MapComponent } from '../../../shared/map/map.component';
+import { FlatService } from '../../../core/services/flat.service';
+import { ReviewService } from '../../../core/services/review.service';
+import { ReservationService } from '../../../core/services/reservation.service';
 
 @Component({
   selector: 'sf-flat-card',
@@ -79,10 +81,12 @@ export class FlatCardComponent implements OnInit {
   propFilter: TuiMatcher<PropertyValueEntity> = (prop: PropertyValueEntity) => prop.value;
 
   constructor(
-    private http: HttpClient,
-    private route: ActivatedRoute,
-    private store: Store<AppState>,
-    private router: Router
+    private readonly flatService: FlatService,
+    private readonly reservationService: ReservationService,
+    private readonly reviewService: ReviewService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly store: Store<AppState>
   ) {
     this.isDateDisabled = this.isDateDisabled.bind(this);
   }
@@ -91,7 +95,7 @@ export class FlatCardComponent implements OnInit {
     this.flat$ = this.route.params.pipe(
       switchMap((params) => {
         this.flatId = +params['id'];
-        return this.http.get<FlatEntity>(`/flat/${this.flatId}`);
+        return this.flatService.getFlat(this.flatId);
       }),
       tap((flat) => {
         this.reservations = flat.reservations;
@@ -102,7 +106,7 @@ export class FlatCardComponent implements OnInit {
     this.isOwnFlat$ = combineLatest([this.flat$, this.user$]).pipe(map(([flat, user]) => flat.user.id === user?.id));
 
     this.reviews$ = this.route.params.pipe(
-      switchMap(params => this.http.get<ReviewEntity[]>(`/review/${params['id']}`)),
+      switchMap(params => this.reviewService.getFlatReviews(+params['id'])),
       shareReplay(1)
     );
 
@@ -137,16 +141,18 @@ export class FlatCardComponent implements OnInit {
   }
 
   reserve(): void {
-    const data = {
-      from: this.reservation.dates?.from.toUtcNativeDate(),
-      to: this.reservation.dates?.to.toUtcNativeDate(),
-      flat: { id: this.flatId },
-      sharedFlat: this.reservation.sharedFlat
-    };
+    if (this.reservation.dates) {
+      const data = {
+        from: this.reservation.dates.from.toUtcNativeDate(),
+        to: this.reservation.dates.to.toUtcNativeDate(),
+        flat: { id: this.flatId },
+        sharedFlat: this.reservation.sharedFlat ? { id: this.reservation.sharedFlat.id } : undefined
+      };
 
-    this.http.post<ReservationEntity>('/reservation', data).subscribe((reservation) => {
-      this.router.navigate(['/reservation/card', reservation.id]).catch(console.error);
-    });
+      this.reservationService.createReservation(data).subscribe((reservation) => {
+        this.router.navigate(['/reservation/card', reservation.id]).catch(console.error);
+      });
+    }
   }
 
   loadOwnFlats(): void {
@@ -167,7 +173,7 @@ export class FlatCardComponent implements OnInit {
               to: this.reservation.dates?.to.toUtcNativeDate().toISOString().substring(0, 10),
               shared: true
             };
-            return this.http.get<FlatEntity[]>('/flat/my', { params: params as Params });
+            return this.flatService.getOwnFlats(params);
           })
         )
         .subscribe((ownFlats) => {

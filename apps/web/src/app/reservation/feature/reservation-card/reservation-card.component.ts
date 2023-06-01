@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { ReservationEntity } from '@sf/interfaces/modules/flat/entities/reservation.entity';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ReservationIslandComponent } from '../../ui/reservation-island/reservation-island.component';
@@ -16,6 +15,8 @@ import { ReviewEntity } from '@sf/interfaces/modules/flat/entities/review.entity
 import { User } from '../../../core/store/auth/reducers';
 import { combineLatest } from 'rxjs';
 import { AuthEffects } from '../../../core/store/auth/effects';
+import { ReservationService } from '../../../core/services/reservation.service';
+import { ReviewService } from '../../../core/services/review.service';
 
 @Component({
   selector: 'sf-reservation-card',
@@ -54,19 +55,20 @@ export class ReservationCardComponent implements OnInit {
     });
 
   constructor(
-    private readonly http: HttpClient,
+    private readonly reservationService: ReservationService,
     private readonly route: ActivatedRoute,
     private readonly store: Store<AppState>,
     private readonly fb: FormBuilder,
     private readonly authEffects: AuthEffects,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly reviewService: ReviewService
   ) {}
 
   ngOnInit(): void {
     const reservationId = this.route.snapshot.params['id'];
     combineLatest([
       this.store.select(selectCurrentUser),
-      this.http.get<ReservationEntity>('/reservation/' + reservationId)
+      this.reservationService.getReservation(reservationId)
     ]).subscribe(([user, reservation]) => {
       this.reservation = reservation;
       this.currentUser = user as User;
@@ -95,7 +97,7 @@ export class ReservationCardComponent implements OnInit {
       }
     });
 
-    this.http.get<MessageEntity[]>('/message/' + reservationId).subscribe((messages) => {
+    this.reservationService.getMessages(reservationId).subscribe((messages) => {
       this.messages = messages;
     });
 
@@ -108,10 +110,10 @@ export class ReservationCardComponent implements OnInit {
     }
 
     const body = {
-      text: this.messageControl.getRawValue(),
+      text: this.messageControl.getRawValue() || '',
       reservation: { id: this.reservation.id }
     };
-    this.http.post<MessageEntity>('/message', body).subscribe((message) => {
+    this.reservationService.createMessage(body).subscribe((message) => {
       this.messages.push(message);
       this.messageControl.reset();
     });
@@ -129,8 +131,8 @@ export class ReservationCardComponent implements OnInit {
       ...this.reviewForm.getRawValue(),
       flat: { id: reviewFlat.id }
     };
-
-    this.http.post<ReviewEntity>('/review', body).subscribe((review) => {
+    
+    this.reviewService.createReview(body).subscribe((review) => {
       this.currentUserReview = review;
     });
   }

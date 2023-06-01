@@ -22,17 +22,15 @@ export class ProfileComponent implements OnInit {
 
   private readonly dialog = this.dialogService.open<number>(
     new PolymorpheusComponent(ProfileEditComponent, this.injector),
-    {
-      dismissible: true
-    }
+    { dismissible: true }
   );
 
   constructor(
     @Inject(TuiDialogService) private readonly dialogService: TuiDialogService,
     @Inject(Injector) private readonly injector: Injector,
-    private readonly store: Store<AppState>,
     private readonly authEffects: AuthEffects,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly store: Store<AppState>
   ) {}
 
   ngOnInit(): void {

@@ -1,12 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { CityEntity } from '@sf/interfaces/modules/city/entities/city.entity';
-import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
-import { PropertyEntity } from '@sf/interfaces/modules/flat/entities/property.entity';
 import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
 import { TuiButtonModule, TuiDataListModule, TuiErrorModule } from '@taiga-ui/core';
 import {
@@ -29,6 +26,8 @@ import { AppState } from '../../../core/store/reducers';
 import { formValidatorProvider } from '../../../shared/form-validators-provider';
 import { LoginButtonComponent } from '../../../shared/login-button/login-button.component';
 import { ExampleNativeDateTransformerDirective } from '../../../shared/to-native-date.directive';
+import { CityService } from '../../../core/services/city.service';
+import { FlatService } from '../../../core/services/flat.service';
 
 @Component({
   selector: 'sf-flat-add',
@@ -61,14 +60,15 @@ export class FlatAddComponent implements OnInit {
   form: FormGroup;
 
   filesControl = new FormControl();
-  cities$ = this.http.get<CityEntity[]>('/city');
+  cities$ = this.cityService.getCities();
   user$ = this.store.select(selectCurrentUser);
 
   constructor(
-    private readonly store: Store<AppState>,
-    private readonly http: HttpClient,
+    private readonly cdRef: ChangeDetectorRef,
+    private readonly cityService: CityService,
+    private readonly flatService: FlatService,
     private readonly router: Router,
-    private readonly cdRef: ChangeDetectorRef
+    private readonly store: Store<AppState>
   ) {}
 
   get propertiesControls(): FormGroup[] {
@@ -92,7 +92,7 @@ export class FlatAddComponent implements OnInit {
       guests: new FormControl(1, { nonNullable: true, validators: Validators.required })
     });
 
-    this.http.get<PropertyEntity[]>('/flat/properties').subscribe((properties) => {
+    this.flatService.getProperties().subscribe((properties) => {
       this.form.addControl(
         'propertyValues',
         new FormArray(
@@ -124,17 +124,17 @@ export class FlatAddComponent implements OnInit {
     }
 
     let flatId: number;
-    this.http
-      .post<FlatEntity>('/flat', this.form.value)
+    this.flatService
+      .createFlat(this.form.value)
       .pipe(
         tap(flat => (flatId = flat.id)),
         mergeMap(() =>
-          from((this.filesControl.value || []) as File[]).pipe(concatMap(item => of(item).pipe(delay(10))))
+          from((this.filesControl.value || []) as File[]).pipe(concatMap(item => of(item).pipe(delay(100))))
         ),
         mergeMap((file) => {
           const formData = new FormData();
           formData.append('file', file, file.name);
-          return this.http.post(`/flat/${flatId}/photo`, formData);
+          return this.flatService.addPhoto(flatId, formData);
         }),
         toArray()
       )

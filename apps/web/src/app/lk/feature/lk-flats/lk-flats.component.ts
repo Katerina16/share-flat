@@ -1,12 +1,12 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
 import { FlatIslandComponent } from '../../../shared/flat-island/flat-island.component';
 import { RouterLink } from '@angular/router';
 import { TuiButtonModule, TuiDialogService } from '@taiga-ui/core';
 import { TUI_PROMPT, TuiPromptData, TuiPromptModule } from '@taiga-ui/kit';
 import { filter, switchMap, tap } from 'rxjs';
+import { FlatService } from '../../../core/services/flat.service';
 
 @Component({
   selector: 'sf-lk-flats',
@@ -15,10 +15,10 @@ import { filter, switchMap, tap } from 'rxjs';
   templateUrl: './lk-flats.component.html'
 })
 export class LkFlatsComponent {
-  flats$ = this.http.get<FlatEntity[]>('/flat/my');
+  flats$ = this.flatService.getOwnFlats();
 
   constructor(
-    private readonly http: HttpClient,
+    private readonly flatService: FlatService,
     @Inject(TuiDialogService) private readonly dialogs: TuiDialogService
   ) {}
 
@@ -30,15 +30,11 @@ export class LkFlatsComponent {
     };
 
     this.dialogs
-      .open<boolean>(TUI_PROMPT, {
-        label: 'Подтверждение действия',
-        size: 's',
-        data
-      })
+      .open<boolean>(TUI_PROMPT, { label: 'Подтверждение действия', size: 's', data })
       .pipe(
         filter(Boolean),
-        switchMap(() => this.http.delete(`/flat/${flat.id}`)),
-        tap(() => (this.flats$ = this.http.get<FlatEntity[]>('/flat/my')))
+        switchMap(() => this.flatService.deleteFlat(flat.id)),
+        tap(() => (this.flats$ = this.flatService.getOwnFlats()))
       )
       .subscribe();
   }

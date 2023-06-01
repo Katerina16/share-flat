@@ -1,12 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { CityEntity } from '@sf/interfaces/modules/city/entities/city.entity';
 import { FlatEntity } from '@sf/interfaces/modules/flat/entities/flat.entity';
-import { PropertyEntity } from '@sf/interfaces/modules/flat/entities/property.entity';
 import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
 import {
   TuiAlertService,
@@ -38,6 +36,8 @@ import { formValidatorProvider } from '../../../shared/form-validators-provider'
 import { LoginButtonComponent } from '../../../shared/login-button/login-button.component';
 import { ExampleNativeDateTransformerDirective } from '../../../shared/to-native-date.directive';
 import { AuthEffects } from '../../../core/store/auth/effects';
+import { FlatService } from '../../../core/services/flat.service';
+import { CityService } from '../../../core/services/city.service';
 
 @Component({
   selector: 'sf-flat-edit',
@@ -73,18 +73,18 @@ export class FlatEditComponent implements OnInit {
   filesControl = new FormControl();
   flat: FlatEntity;
 
-  cities$ = this.http.get<CityEntity[]>('/city');
-
+  cities$ = this.cityService.getCities();
   user$ = this.store.select(selectCurrentUser);
 
   constructor(
-    private authEffects: AuthEffects,
-    private store: Store<AppState>,
-    private http: HttpClient,
-    private router: Router,
-    private route: ActivatedRoute,
-    private cdRef: ChangeDetectorRef,
-    private alertService: TuiAlertService
+    private readonly alertService: TuiAlertService,
+    private readonly authEffects: AuthEffects,
+    private readonly cdRef: ChangeDetectorRef,
+    private readonly cityService: CityService,
+    private readonly flatService: FlatService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly store: Store<AppState>
   ) {}
 
   get propertiesControls(): FormGroup[] {
@@ -94,7 +94,7 @@ export class FlatEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.params
       .pipe(
-        switchMap(params => combineLatest([this.http.get<FlatEntity>(`/flat/${params['id']}`), this.user$])),
+        switchMap(params => combineLatest([this.flatService.getFlat(params['id']), this.user$])),
         filter(([flat, user]) => {
           if (flat.user.id !== user?.id) {
             this.alertService.open('Ошибка доступа', { status: TuiNotification.Error }).subscribe();
@@ -104,7 +104,7 @@ export class FlatEditComponent implements OnInit {
           return true;
         }),
         switchMap(([flat]) => {
-          return this.http.get<PropertyEntity[]>('/flat/properties').pipe(map(properties => ({ flat, properties })));
+          return this.flatService.getProperties().pipe(map(properties => ({ flat, properties })));
         })
       )
       .subscribe(({ flat, properties }) => {
@@ -150,7 +150,7 @@ export class FlatEditComponent implements OnInit {
   }
 
   deletePhoto(photo: string): void {
-    this.http.delete(`/flat/${this.flat.id}/photo/${photo}`).subscribe(() => {
+    this.flatService.deletePhoto(this.flat.id, photo).subscribe(() => {
       this.flat.photos = this.flat.photos.filter(p => p !== photo);
     });
   }
@@ -160,8 +160,8 @@ export class FlatEditComponent implements OnInit {
   }
 
   save(): void {
-    this.http
-      .put<FlatEntity>(`/flat/${this.flat.id}`, this.form.value)
+    this.flatService
+      .updateFlat(this.flat.id, this.form.value)
       .pipe(
         mergeMap(() =>
           from((this.filesControl.value || []) as File[]).pipe(concatMap(item => of(item).pipe(delay(10))))
@@ -169,7 +169,7 @@ export class FlatEditComponent implements OnInit {
         mergeMap((file) => {
           const formData = new FormData();
           formData.append('file', file, file.name);
-          return this.http.post(`/flat/${this.flat.id}/photo`, formData);
+          return this.flatService.addPhoto(this.flat.id, formData);
         }),
         toArray()
       )

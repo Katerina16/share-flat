@@ -29,11 +29,7 @@ export class LkReservationsComponent {
   currentUser$ = this.store.select(selectCurrentUser);
 
   readonly mapper = (reservations: ReservationEntity[] | null): ReservationEntity[] =>
-    reservations
-      ? reservations.sort((a, b) => {
-        return a.from < b.from ? 1 : -1;
-      })
-      : [];
+    reservations ? reservations.sort((a, b) => (a.from < b.from ? 1 : -1)) : [];
 
   constructor(private readonly reservationService: ReservationService, private readonly store: Store<AppState>) {}
 

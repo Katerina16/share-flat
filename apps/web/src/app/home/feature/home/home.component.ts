@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,6 +15,7 @@ import {
   TuiSelectModule
 } from '@taiga-ui/kit';
 import { addDays, isAfter } from 'date-fns';
+import { CityService } from '../../../core/services/city.service';
 
 interface HomeSearchForm {
   city: FormControl<CityEntity | null>;
@@ -46,7 +46,7 @@ interface HomeSearchForm {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
-  cities$ = this.http.get<CityEntity[]>('/city');
+  cities$ = this.cityService.getCities();
 
   form = new FormGroup<HomeSearchForm>({
     city: new FormControl(null, { validators: Validators.required }),
@@ -55,7 +55,11 @@ export class HomeComponent {
     shared: new FormControl(false, { nonNullable: true })
   });
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {}
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly cityService: CityService,
+    private readonly router: Router
+  ) {}
 
   isDateDisabled(day: TuiDay): boolean {
     return isAfter(new Date(), addDays(day.toUtcNativeDate(), 1));
@@ -76,7 +80,7 @@ export class HomeComponent {
       to: formValue.period?.to.toUtcNativeDate().toISOString().substring(0, 10),
       shared: formValue.shared
     };
-    
+
     this.router.navigate(['/flat/search'], { queryParams }).catch(console.error);
   }
 }

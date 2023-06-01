@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TuiSvgModule } from '@taiga-ui/core';
@@ -10,16 +9,16 @@ import { City } from '../../models/city.model';
 import { FlatsData } from '../../models/flats-data.model';
 import { SearchParams } from '../../models/search-params.model';
 import { FlatFiltersComponent } from '../../ui/flat-filters/flat-filters.component';
-import { FlatSearhItemComponent } from '../../ui/flat-searh-item/flat-searh-item.component';
 import { FlatPropertyInterface } from '../../models/flat-property.model';
 import { FlatIslandComponent } from '../../../shared/flat-island/flat-island.component';
+import { CityService } from '../../../core/services/city.service';
+import { FlatService } from '../../../core/services/flat.service';
 
 @Component({
   selector: 'sf-flat-list',
   standalone: true,
   imports: [
     CommonModule,
-    FlatSearhItemComponent,
     TuiIslandModule,
     TuiCarouselModule,
     RouterModule,
@@ -40,8 +39,8 @@ export class FlatListComponent implements OnInit, AfterViewInit {
   private loading$ = new BehaviorSubject(false);
   private daysCount$: Observable<number>;
 
-  private cities$ = this.http.get<City[]>('/city').pipe(shareReplay(1));
-  private properties$ = this.http.get<FlatPropertyInterface[]>('/flat/properties').pipe(shareReplay(1));
+  private cities$ = this.cityService.getCities().pipe(shareReplay(1));
+  private properties$ = this.flatService.getProperties().pipe(shareReplay(1));
 
   vm$: Observable<{
     flatsData: FlatsData;
@@ -58,7 +57,12 @@ export class FlatListComponent implements OnInit, AfterViewInit {
 
   endOfListObserver: IntersectionObserver;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
+  constructor(
+    private readonly cityService: CityService,
+    private readonly flatService: FlatService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
+  ) {}
 
   ngOnInit(): void {
     combineLatest([this.route.queryParams, this.cities$])
@@ -84,7 +88,7 @@ export class FlatListComponent implements OnInit, AfterViewInit {
           this.router.navigate(['.'], { relativeTo: this.route, queryParams }).catch(console.error);
           this.loading$.next(true);
         }),
-        switchMap(params => this.http.get<FlatsData>('/flat', { params: { ...params } })),
+        switchMap(params => this.flatService.getFlats(params)),
         tap((data) => {
           this.imageIndexes = data.flats.reduce((res, flat) => {
             res[flat.id] = 0;
