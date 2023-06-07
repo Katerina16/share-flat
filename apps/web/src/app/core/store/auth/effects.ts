@@ -3,7 +3,7 @@ import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { TuiAlertService, TuiNotification } from '@taiga-ui/core';
 import { catchError, exhaustMap, filter, map, of, tap } from 'rxjs';
-import { AuthService } from '../../../auth/services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { AppState } from '../reducers';
 import * as AuthActions from './actions';
 import * as AuthSelectors from './selectors';
@@ -35,7 +35,7 @@ export class AuthEffects {
           map(data => AuthActions.loginSuccess(data)),
           catchError(() => {
             this.alertService.open('Неверный логин или пароль', { status: TuiNotification.Error }).subscribe();
-            return of(AuthActions.loginFail())
+            return of(AuthActions.loginFail());
           })
         )
       )

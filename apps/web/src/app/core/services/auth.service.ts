@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { CreateUserDto } from '@sf/interfaces/modules/user/dto/create.user.dto';
 import { LoginUserDto } from '@sf/interfaces/modules/user/dto/login.user.dto';
 import { map, Observable, of } from 'rxjs';
-import { AuthUser, User } from '../../core/store/auth/reducers';
+import { AuthUser, User } from '../store/auth/reducers';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
